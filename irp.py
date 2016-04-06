@@ -4,6 +4,8 @@ import logging
 import inspect
 import sys
 
+FRAME = [None]
+
 def irp_ancestor(IRP_instance, EoI, visited=None):
     """
     Return the ancestor: A node reachable by repeated proceeding from child to parent.
@@ -26,7 +28,7 @@ def irp_ancestor(IRP_instance, EoI, visited=None):
     return visited
 
 
-def get_node(IRP_instance, provider, private_node, caller_name):
+def get_node(IRP_instance, provider, private_node):
     """
     Provider is a function used to compute the node.
     Private_node, is private value of the node ("_node").
@@ -35,6 +37,10 @@ def get_node(IRP_instance, provider, private_node, caller_name):
     This function set
     """
     logging.debug("Ask for %s", private_node[1:])
+
+    caller_name = FRAME[-1]
+
+    FRAME.append(private_node)
 
     try:
         value = getattr(IRP_instance, private_node)
@@ -50,16 +56,16 @@ def get_node(IRP_instance, provider, private_node, caller_name):
     finally:
         #Handle the mutability
         local_parent = "{0}_parent".format(private_node)
-        if caller_name != "<module>":
-
-            caller_name_pri = '_{0}'.format(caller_name)
+        if caller_name:
 
             try:
-                setattr(IRP_instance, local_parent, set([caller_name_pri]))
+                setattr(IRP_instance, local_parent, set([caller_name]))
             except AttributeError:
                 s = getattr(IRP_instance, local_parent)
-                setattr(IRP_instance, local_parent, set([caller_name_pri]) | s)
+                setattr(IRP_instance, local_parent, set([caller_name]) | s)
 
+    x = FRAME.pop()
+    assert(x==private_node)
     return value
 
 
@@ -69,11 +75,7 @@ def irp_node(provider):
     private_node = "_{0}".format(str_provider)
 
     def fget(self):
-        caller_name = sys._getframe().f_back.f_code.co_name
-        #            curframe = inspect.currentframe()
-        #            calframe = inspect.getouterframes(curframe, 2)
-        #            caller_name = calframe[1][3]
-        return get_node(self, provider, private_node, caller_name)
+        return get_node(self, provider, private_node)
 
     def fset(self, value):
         raise AttributeError, "Immutable Node"
@@ -93,8 +95,7 @@ def irp_node_mutable(provider):
         setattr(self, private_node, value)
 
     def fget(self):
-        caller_name = sys._getframe().f_back.f_code.co_name
-        return get_node(self, provider, private_node, caller_name)
+        return get_node(self, provider, private_node)
 
     return property(fget=fget, fset=fset)
 
