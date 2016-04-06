@@ -64,8 +64,7 @@ def get_node(IRP_instance, provider, private_node):
                 s = getattr(IRP_instance, local_parent)
                 setattr(IRP_instance, local_parent, set([caller_name]) | s)
 
-    x = FRAME.pop()
-    assert(x==private_node)
+    assert(FRAME.pop() == private_node)
     return value
 
 
