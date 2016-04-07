@@ -18,24 +18,18 @@ def loggin_debug():
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-def loggin_unset():
-    import logging
-
+def loggin_info():
     logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    logger.addHandler(handler)
-    logger.setLevel(logging.CRITICAL)
+    logger.setLevel(logging.INFO)
 
 class NotTrivialFunction(object):
-    '''
-    Compute : t(u(d1,d2),v(d3,d4),w(d5))
+    '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
     where:
         t(x,y) = x + y + 4
         u(x,y) = x + y + 1
         v(x,y) = x + y + 2
         w(x)   = x + 3
-    and d1, d2, d3, d3, d5 are the parameters
-    '''
+    and d1, d2, d3, d3, d5 are the parameters'''
 
     @irp_leaves_mutables("d1")
     def __init__(self, d1, d2, d3, d4, d5):
@@ -71,9 +65,7 @@ class NotTrivialFunction(object):
 from math import cos, sin
 
 class NewtonRaphson(object):
-    '''
-    Solve cos x - x = 0 by Newton Rapshon's algorithm
-    '''
+    '''Solve cos x - x = 0 by Newton Rapshon's algorithm'''
 
     @irp_leaves_mutables("x")
     def __init__(self,x):
@@ -98,23 +90,24 @@ class NewtonRaphson(object):
 
 if __name__ == '__main__':
 
-    print NotTrivialFunction.__doc__
+    #This overuse of logging module is require by conda bluid...
+
     loggin_debug()
-    
-    print 'Show the dynamic resolution of node'
+    logging.info(NotTrivialFunction.__doc__)
+
+    logging.info('Show the dynamic resolution of node')
     F = NotTrivialFunction(1, 5, 8, 10, 7)
     assert (F.t == 42)
-    print 'Show the lazy evaluation'
+    logging.info('Show the lazy evaluation')
     assert (F.t == 42)
 
-    print 'Show the coherence and mutability'
+    logging.info('Show the coherence and mutability')
     F.d1 = 2
     assert (F.t == 43)
 
-    print NewtonRaphson.__doc__
-    loggin_unset()
-
+    loggin_info()
+    logging.info(NewtonRaphson.__doc__)
     F=NewtonRaphson(x=1)
     F.solve()
     assert (abs(F.x -0.739085133) < 1.e-9)
-    print "Success! x={0:.9f}".format(F.x)
+    logging.info("Success! x={0:.9f}".format(F.x))
