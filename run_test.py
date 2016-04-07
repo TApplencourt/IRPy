@@ -7,7 +7,7 @@ from irpy import irp_leaves_mutables
 import logging
 
 
-def loggin_debug():
+def logging_debug():
 
     logger = logging.getLogger()
     handler = logging.StreamHandler()
@@ -18,7 +18,7 @@ def loggin_debug():
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-def loggin_info():
+def logging_info():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     #This overuse of logging module is require by conda bluid...
 
-    loggin_debug()
+    logging_debug()
     logging.info(NotTrivialFunction.__doc__)
 
     logging.info('Show the dynamic resolution of node')
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     F.d1 = 2
     assert (F.t == 43)
 
-    loggin_info()
+    logging_info()
     logging.info(NewtonRaphson.__doc__)
     F=NewtonRaphson(x=1)
     F.solve()
