@@ -9,5 +9,9 @@ requirements:
   run:
     - python
 
+source:
+  git_url: https://github.com/TApplencourt/IRPy.git
+
 about:
   summary: IRP for Python
+  license_file: LICENSE
