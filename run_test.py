@@ -27,7 +27,7 @@ def loggin_unset():
     logger.setLevel(logging.CRITICAL)
 
 class NotTrivialFunction(object):
-    """
+    '''
     Compute : t(u(d1,d2),v(d3,d4),w(d5))
     where:
         t(x,y) = x + y + 4
@@ -35,7 +35,7 @@ class NotTrivialFunction(object):
         v(x,y) = x + y + 2
         w(x)   = x + 3
     and d1, d2, d3, d3, d5 are the parameters
-    """
+    '''
 
     @irp_leaves_mutables("d1")
     def __init__(self, d1, d2, d3, d4, d5):
@@ -71,9 +71,9 @@ class NotTrivialFunction(object):
 from math import cos, sin
 
 class NewtonRaphson(object):
-    """
+    '''
     Solve cos x - x = 0 by Newton Rapshon's algorithm
-    """
+    '''
 
     @irp_leaves_mutables("x")
     def __init__(self,x):
