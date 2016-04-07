@@ -1,0 +1,13 @@
+package:
+  name: irpy
+  version: 0.1
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+
+about:
+  summary: IRP for Python
