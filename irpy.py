@@ -62,6 +62,7 @@ def get_irp_node(IRP_instance, provider, private_node):
 
         #Handle your execution stack
         caller_name = D_PATH[IRP_instance][-1]
+
         D_PATH[IRP_instance].append(private_node)
 
         #Get and set the value node
@@ -82,10 +83,10 @@ def get_irp_node(IRP_instance, provider, private_node):
             if caller_name:
 
                 try:
-                    setattr(IRP_instance, local_parent, set([caller_name]))
-                except AttributeError:
                     s = getattr(IRP_instance, local_parent)
                     setattr(IRP_instance, local_parent, set([caller_name]) | s)
+                except AttributeError:
+                    setattr(IRP_instance, local_parent, set([caller_name]))
 
         #Handle your execution stack
         assert (D_PATH[IRP_instance].pop() == private_node)
@@ -105,7 +106,13 @@ def set_irp_node(IRP_instance, provider, private_node, value):
 
     This function is (maybe) trade safe.  
     """
+
+    logging.debug("Set node %s", private_node[1:])
+
     for i in irp_ancestor(IRP_instance, private_node) - set([private_node]):
+
+        logging.debug("Unset parent: %s", i[1:])
+
         with D_LOCK[IRP_instance][i]:
             delattr(IRP_instance, i)
 

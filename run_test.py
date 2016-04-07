@@ -4,9 +4,10 @@ from irpy import irp_node
 from irpy import irp_node_mutable
 from irpy import irp_leafs_mutable
 
+import logging
 
-def init_loggin():
-    import logging
+
+def loggin_debug():
 
     logger = logging.getLogger()
     handler = logging.StreamHandler()
@@ -16,6 +17,14 @@ def init_loggin():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
+
+def loggin_unset():
+    import logging
+
+    logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
+    logger.setLevel(logging.CRITICAL)
 
 class t_factory(object):
     """
@@ -58,10 +67,36 @@ class t_factory(object):
     def fu(self, x, y):
         return x + y + 1
 
+from math import cos, sin
+
+class NewtonRaphson(object):
+    """Solve cos x - x = 0 by the Newton Rapsoon algorithm"""
+
+    @irp_leafs_mutable("x")
+    def __init__(self,x):
+        self.x = x        
+
+    @irp_node_mutable
+    def f(self):
+        return cos(self.x) - self.x
+
+    @irp_node_mutable
+    def fprime(self):
+        return -sin(self.x) - 1
+
+    @irp_node_mutable
+    def x_next(self):
+        return self.x - self.f / self.fprime
+
+    def solve(self):
+
+        while abs(self.x - self.x_next) > 1.e-9:
+            self.x = self.x_next
 
 if __name__ == '__main__':
 
-    init_loggin()
+    print "Not so trivial function"
+    loggin_debug()
 
     F = t_factory(1, 5, 8, 10, 7)
     #Show the dynamic resolution of node
@@ -72,3 +107,10 @@ if __name__ == '__main__':
     #Show the coherence and mutability of tree
     F.d1 = 2
     assert (F.t == 43)
+
+    print "solve cos(x) - x = 0 by Newton Raphson algorithm"
+    loggin_unset()
+
+    F=NewtonRaphson(x=1)
+    F.solve()
+    assert (abs(F.x -0.739085133) < 1.e-9)
