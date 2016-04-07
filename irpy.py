@@ -37,7 +37,7 @@ def get_irp_node(IRP_instance, provider, private_node):
 
     This function set
     """
-    with D_LOCK[IRP_instance][provider]:
+    with D_LOCK[IRP_instance][private_node]:
 
         logging.debug("Ask for %s", private_node[1:])
     
