@@ -2,7 +2,7 @@
 
 from irpy import irp_node
 from irpy import irp_node_mutable
-from irpy import irp_leafs_mutable
+from irpy import irp_leaves_mutables
 
 import logging
 
@@ -26,17 +26,18 @@ def loggin_unset():
     logger.addHandler(handler)
     logger.setLevel(logging.CRITICAL)
 
-class t_factory(object):
+class NotTrivialFunction(object):
     """
-    t(u(d1,d2),v(d3,d4),w(d5))
+    Compute : t(u(d1,d2),v(d3,d4),w(d5))
     where:
         t(x,y) = x + y + 4
         u(x,y) = x + y + 1
         v(x,y) = x + y + 2
         w(x)   = x + 3
+    and d1, d2, d3, d3, d5 are the parameters
     """
 
-    @irp_leafs_mutable("d1")
+    @irp_leaves_mutables("d1")
     def __init__(self, d1, d2, d3, d4, d5):
         self.d1 = d1
         self.d2 = d2
@@ -70,9 +71,11 @@ class t_factory(object):
 from math import cos, sin
 
 class NewtonRaphson(object):
-    """Solve cos x - x = 0 by the Newton Rapsoon algorithm"""
+    """
+    Solve cos x - x = 0 by Newton Rapshon's algorithm
+    """
 
-    @irp_leafs_mutable("x")
+    @irp_leaves_mutables("x")
     def __init__(self,x):
         self.x = x        
 
@@ -95,22 +98,23 @@ class NewtonRaphson(object):
 
 if __name__ == '__main__':
 
-    print "Not so trivial function"
+    print NotTrivialFunction.__doc__
     loggin_debug()
-
-    F = t_factory(1, 5, 8, 10, 7)
-    #Show the dynamic resolution of node
+    
+    print 'Show the dynamic resolution of node'
+    F = NotTrivialFunction(1, 5, 8, 10, 7)
     assert (F.t == 42)
-    #Show the lazy evaluation
+    print 'Show the lazy evaluation'
     assert (F.t == 42)
 
-    #Show the coherence and mutability of tree
+    print 'Show the coherence and mutability'
     F.d1 = 2
     assert (F.t == 43)
 
-    print "solve cos(x) - x = 0 by Newton Raphson algorithm"
+    print NewtonRaphson.__doc__
     loggin_unset()
 
     F=NewtonRaphson(x=1)
     F.solve()
     assert (abs(F.x -0.739085133) < 1.e-9)
+    print "Success! x={0:.9f}".format(F.x)

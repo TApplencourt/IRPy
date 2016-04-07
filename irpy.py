@@ -162,7 +162,7 @@ def irp_node_mutable(provider):
     return property(fget=fget, fset=fset)
 
 
-def irp_leafs_mutable(*irp_leaf):
+def irp_leaves_mutables(*irp_leaf):
     "This a named decorator"
     'For all the node in irp_leaf we create the property associated'
 
