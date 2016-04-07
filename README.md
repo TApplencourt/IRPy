@@ -1,5 +1,5 @@
 #IRPy (Implicit Reference to Parameters for Python)
-<script type"text/javascript" src="https://assets.gfycat.com/gfycat.js"></script>
+![](https://zippy.gfycat.com/SarcasticOpenHedgehog.gif)
 
 **I**mplicit **R**eference to **P**arameters\[0\] is a amazing is a programming paradigm.
 
