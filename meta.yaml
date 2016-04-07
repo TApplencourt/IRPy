@@ -4,10 +4,10 @@ package:
 
 requirements:
   build:
-    - python
+    - python 2
     - setuptools
   run:
-    - python
+    - python 2
 
 source:
   git_url: https://github.com/TApplencourt/IRPy.git
