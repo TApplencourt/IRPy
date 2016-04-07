@@ -2,6 +2,7 @@
 
 from irpy import irp_node
 from irpy import irp_node_mutable
+from irpy import irp_leafs_mutable
 
 class t_factory(object):
     """
@@ -13,16 +14,13 @@ class t_factory(object):
         w(x)   = x + 3
     """
 
+    @irp_leafs_mutable("d1")
     def __init__(self,d1,d2,d3,d4,d5):
         self.d1 = d1
         self.d2 = d2
         self.d3 = d3
         self.d4 = d4
         self.d5 = d5
-
-    @irp_node_mutable
-    def d1(self):
-        return self.d1
 
     @irp_node
     def t(self):
@@ -63,4 +61,5 @@ if __name__ == '__main__':
     assert(F.t == 42)
 
     F.d1 = 2
+    assert(F.t == 43)
     assert(F.t == 43)

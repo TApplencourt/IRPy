@@ -71,6 +71,13 @@ def get_irp_node(IRP_instance, provider, private_node):
     
     return value
 
+def set_irp_node(self, provider, private_node,value):
+    for i in irp_ancestor(self, private_node) - set([private_node]):
+        with D_LOCK[self][i]:
+            delattr(self, i)
+
+    with D_LOCK[self][private_node]:
+        setattr(self, private_node, value)
 
 def irp_node(provider):
 
@@ -95,12 +102,33 @@ def irp_node_mutable(provider):
         return get_irp_node(self, provider, private_node)
 
     def fset(self, value):
+        return set_irp_node(self, provider, private_node,value)
 
-        for i in irp_ancestor(self, private_node) - set([private_node]):
-            with D_LOCK[self][i]:
-                delattr(self, i)
-
-        with D_LOCK[self][private_node]:
-            setattr(self, private_node, value)
 
     return property(fget=fget, fset=fset)
+
+
+def irp_leafs_mutable(*tag_name):
+
+    def tags_decorator(func):
+        def func_wrapper(self,*args, **kwargs):
+
+            for str_provider in tag_name: 
+                private_node = "_{0}".format(str_provider)
+                
+                def provider(self):
+                    return getattr(self, private_node)
+
+                def fget(self):
+                    return get_irp_node(self, provider, private_node)
+
+                def fset(self,value):
+                    return set_irp_node(self, provider, private_node,value)
+
+                setattr(self.__class__,str_provider,property(fget=fget,fset=fset))
+                    
+            return func(self,*args, **kwargs)
+    
+        return func_wrapper
+    
+    return tags_decorator
