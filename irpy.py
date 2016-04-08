@@ -83,10 +83,11 @@ def get_irp_node(IRP_instance, provider, private_node):
             if caller_name:
 
                 try:
-                    s = getattr(IRP_instance, local_parent)
-                    setattr(IRP_instance, local_parent, set([caller_name]) | s)
+                    s = getattr(IRP_instance, local_parent).add([caller_name])
                 except AttributeError:
                     setattr(IRP_instance, local_parent, set([caller_name]))
+                else:
+                    setattr(IRP_instance, local_parent, s)
 
         #Handle the execution stack
         assert (D_PATH[IRP_instance].pop() == private_node)
