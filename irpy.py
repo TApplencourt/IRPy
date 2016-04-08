@@ -42,17 +42,17 @@ def irp_ancestor(IRP_instance, EoI, visited=None):
 #                          _|
 def get_irp_node(IRP_instance, provider, private_node):
     """
-    'provider' is a function used to compute the node.
+    'provider' is a function used to compute value of the node.
     'private_node', is private value of the node ("_node").
-    'parent' is the node who want to access to this particular node.
-    'IRP_instance' is an instance of the class who use IRPy.
+    'parent' is the other node that wants to access to this particular node.
+    'IRP_instance' is an instance of the class which uses IRPy.
 
-        First, this function return the 'private_node' value,
-               if it not existing yet, we will set it.
+        First, this function returns the 'private_node' value,
+               if it does not exist yet, this function will set it.
 
-        Secondly, We handle your own stack of function execution
+        Secondly, we handle your own stack of function execution
                in order to add into ${private_node}_parent all
-               the caller.
+               the names of the callers (the paths).
 
     This function is (maybe) trade safe.
     """
@@ -88,7 +88,7 @@ def get_irp_node(IRP_instance, provider, private_node):
                 except AttributeError:
                     setattr(IRP_instance, local_parent, set([caller_name]))
 
-        #Handle your execution stack
+        #Handle the execution stack
         assert (D_PATH[IRP_instance].pop() == private_node)
 
     return value
@@ -96,15 +96,15 @@ def get_irp_node(IRP_instance, provider, private_node):
 
 def set_irp_node(IRP_instance, provider, private_node, value):
     """
-    'provider' is a function used to compute the node.
+    'provider' is a function used to compute the value node.
     'private_node', is private value of the node ("_node").
-    'parent' is the node who want to access to this particular node.
-    'value' is the value of the node who want to set.
+    'parent' is the other node that wants to access to this particular node.
+    'value' is the value of the node we want to set.
 
-    First we remove all the private variable of the node who use this 
-        particular node. Then we set the new value
+    First we remove all the private variables (caches) of the nodes which use this 
+        particular node. Then we set the new value of the node.
 
-    This function is (maybe) trade safe.  
+    This function is (maybe) thread safe.  
     """
 
     logging.debug("Set node %s", private_node[1:])
@@ -128,8 +128,9 @@ def irp_node(provider):
     """
     'provider' is a function.
 
-    This is the decorator. It is really similar to the 'property' function.
-    In fact we return a property with custom fget and fset
+    This is the immutable decorator. It is really similar to the 'property' function.
+    In fact we return a property with custom fget and fset. The fset raises an AttributeError
+    as the node is immutable.
     """
     str_provider = provider.__name__
     private_node = "_{0}".format(str_provider)
@@ -147,7 +148,7 @@ def irp_node_mutable(provider):
     """
     'provider' is a function.
 
-    This is the decorator. It is really similar to the 'property' function.
+    This is the mutable decorator. It is really similar to the 'property' function.
     In fact we return a property with custom fget and fset
     """
     str_provider = provider.__name__
@@ -162,16 +163,16 @@ def irp_node_mutable(provider):
     return property(fget=fget, fset=fset)
 
 
-def irp_leaves_mutables(*irp_leaf):
+def irp_leaves_mutable(*irp_leaves):
     "This a named decorator"
-    'For all the node in irp_leaf we create the property associated'
+    'For all the nodes in irp_leaves we create the associated property'
 
-    'We set the new property and the we execute the function'
+    'We set the new property and then we execute the function'
 
     def leaf_decorator(func):
         def func_wrapper(self, *args, **kwargs):
 
-            for str_provider in irp_leaf:
+            for str_provider in irp_leaves:
                 private_node = "_{0}".format(str_provider)
 
                 def provider(self):
