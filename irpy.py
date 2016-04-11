@@ -25,10 +25,7 @@ def irp_ancestor(IRP_instance, EoI, visited=None):
 
     visited.add(EoI)
 
-    try:
-        s = getattr(IRP_instance, "{0}_parent".format(EoI))
-    except AttributeError:
-        s = set()
+    s = getattr(IRP_instance, "{0}_parent".format(EoI))
 
     for next_ in s - visited:
         irp_ancestor(IRP_instance, next_, visited)
@@ -80,13 +77,11 @@ def get_irp_node(IRP_instance, provider, private_node):
         finally:
             #Handle the mutability
             local_parent = "{0}_parent".format(private_node)
+    
             if caller_name:
 
-                try:
-                    s = getattr(IRP_instance, local_parent)
-                    setattr(IRP_instance, local_parent, set([caller_name]) | s)
-                except AttributeError:
-                    setattr(IRP_instance, local_parent, set([caller_name]))
+                s = getattr(IRP_instance, local_parent)
+                setattr(IRP_instance, local_parent, set([caller_name]) | s)
 
         #Handle your execution stack
         assert (D_PATH[IRP_instance].pop() == private_node)
@@ -124,6 +119,45 @@ def set_irp_node(IRP_instance, provider, private_node, value):
 # | \  _   _  _  ._ _. _|_  _  ._ 
 # |_/ (/_ (_ (_) | (_|  |_ (_) |  
 #
+class property_irp(object):
+
+    def __init__(self,provider, immutability=True):
+        self.provider = provider
+        self.str_provider = provider.__name__
+        self.private_node = "_{0}".format(self.str_provider)
+
+        self.init_attr = False 
+        
+        self.immutability = immutability
+
+    def set_obj_attr(self,obj):
+
+        if not self.init_attr:
+
+            d= { "_{0}_child":set(),
+                 "_{0}_parent":set(),
+                 "_{0}_coherent":True}
+            
+            for attr,value in d.items():
+                setattr(obj, attr.format(self.str_provider), value)
+            
+            self.init_attr = True
+
+    def __get__(self, obj, objtype):
+        self.set_obj_attr(obj)
+        return get_irp_node(obj, self.provider, self.private_node)
+
+    def __set__(self, obj, value):
+        self.set_obj_attr(obj)
+
+        if self.immutability:
+            raise AttributeError, "Immutable Node"
+        else:
+            set_irp_node(obj, self.provider, self.private_node, value)
+#  _                              
+# | \  _   _  _  ._ _. _|_  _  ._ 
+# |_/ (/_ (_ (_) | (_|  |_ (_) |  
+#
 def irp_node(provider):
     """
     'provider' is a function.
@@ -131,16 +165,8 @@ def irp_node(provider):
     This is the decorator. It is really similar to the 'property' function.
     In fact we return a property with custom fget and fset
     """
-    str_provider = provider.__name__
-    private_node = "_{0}".format(str_provider)
+    return property_irp(provider=provider)
 
-    def fget(self):
-        return get_irp_node(self, provider, private_node)
-
-    def fset(self, value):
-        raise AttributeError, "Immutable Node"
-
-    return property(fget=fget, fset=fset)
 
 
 def irp_node_mutable(provider):
@@ -159,8 +185,7 @@ def irp_node_mutable(provider):
     def fset(self, value):
         return set_irp_node(self, provider, private_node, value)
 
-    return property(fget=fget, fset=fset)
-
+    return property_irp(provider=provider,immutability=False)
 
 def irp_leaves_mutables(*irp_leaf):
     "This a named decorator"
@@ -172,20 +197,15 @@ def irp_leaves_mutables(*irp_leaf):
         def func_wrapper(self, *args, **kwargs):
 
             for str_provider in irp_leaf:
-                private_node = "_{0}".format(str_provider)
 
                 def provider(self):
+                    private_node = "_{0}".format(str_provider)
                     return getattr(self, private_node)
 
-                def fget(self):
-                    return get_irp_node(self, provider, private_node)
-
-                def fset(self, value):
-                    return set_irp_node(self, provider, private_node, value)
-
                 #If this ugly? Yeah... Is this an issue? I don't realy know
-                setattr(self.__class__, str_provider, property(fget=fget,
-                                                               fset=fset))
+                setattr(self.__class__, str_provider, property_irp(provider=provider,
+                                                                   immutability=False))
+
 
             return func(self, *args, **kwargs)
 

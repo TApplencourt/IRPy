@@ -22,6 +22,25 @@ def loggin_info():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
+class Trivial(object):
+    '''Solve cos x - x = 0 by Newton Rapshon's algorithm'''
+
+    @irp_leaves_mutables("d")
+    def __init__(self,d):
+        self.d = d        
+
+    @irp_node_mutable
+    def c(self):
+        return self.d+10
+
+    @irp_node_mutable
+    def b(self):
+        return self.c+100
+
+    @irp_node_mutable
+    def a(self):
+        return self.b+1000
+
 class NotTrivialFunction(object):
     '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
     where:
@@ -47,7 +66,7 @@ class NotTrivialFunction(object):
     def u1(self):
         return self.fu(self.d1, self.d2)
 
-    @irp_node
+    @irp_node_mutable
     def v(self):
         return self.u2 + self.w + 2
 
@@ -71,15 +90,15 @@ class NewtonRaphson(object):
     def __init__(self,x):
         self.x = x        
 
-    @irp_node_mutable
+    @irp_node
     def f(self):
         return cos(self.x) - self.x
 
-    @irp_node_mutable
+    @irp_node
     def fprime(self):
         return -sin(self.x) - 1
 
-    @irp_node_mutable
+    @irp_node
     def x_next(self):
         return self.x - self.f / self.fprime
 
@@ -89,25 +108,24 @@ class NewtonRaphson(object):
             self.x = self.x_next
 
 if __name__ == '__main__':
-
     #This overuse of logging module is require by conda bluid...
 
     loggin_debug()
-    logging.info(NotTrivialFunction.__doc__)
+#
+#    logging.info(NotTrivialFunction.__doc__)
+#
+#    logging.info('Show the dynamic resolution of node')
+#    F = NotTrivialFunction(1, 5, 8, 10, 7)
+#    assert (F.t == 42)
+#    logging.info('Show the lazy evaluation')
+#    assert (F.t == 42)
+#
+#    logging.info('Show the coherence and mutability')
 
-    logging.info('Show the dynamic resolution of node')
-    F = NotTrivialFunction(1, 5, 8, 10, 7)
-    assert (F.t == 42)
-    logging.info('Show the lazy evaluation')
-    assert (F.t == 42)
-
-    logging.info('Show the coherence and mutability')
-    F.d1 = 2
-    assert (F.t == 43)
-
-    loggin_info()
+#    loggin_info()
     logging.info(NewtonRaphson.__doc__)
     F=NewtonRaphson(x=1)
+
     F.solve()
     assert (abs(F.x -0.739085133) < 1.e-9)
     logging.info("Success! x={0:.9f}".format(F.x))
