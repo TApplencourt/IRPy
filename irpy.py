@@ -32,6 +32,23 @@ def irp_ancestor(IRP_instance, EoI, visited=None):
 
     return visited
 
+def irp_descendant(IRP_instance, EoI, visited=None):
+    """
+    Return the ancestor: A node reachable by repeated proceeding from child to parent.
+    The parent of a node is stored in _$node_parent. 
+    If the node is a Root, no parent are present.
+    """
+    if visited is None:
+        visited = set()
+
+    visited.add(EoI)
+
+    s = getattr(IRP_instance, "{0}_child".format(EoI))
+
+    for next_ in s - visited:
+        irp_ancestor(IRP_instance, next_, visited)
+
+    return visited
 
 # ___                                                  
 #  |     _  _. ._ / _|_    _   _ _|_   ._   _   _|  _  
@@ -77,7 +94,7 @@ def get_irp_node(IRP_instance, provider, private_node):
         finally:
             #Handle the mutability
             local_parent = "{0}_parent".format(private_node)
-    
+
             if caller_name:
 
                 s = getattr(IRP_instance, local_parent)
