@@ -142,16 +142,15 @@ def set_irp_node(IRP_instance, provider, pri_node, value):
         with D_LOCK[IRP_instance][i]:
             delattr(IRP_instance, i)
 
-    logging.debug("Set ancestor coherence to True: %s", l_ancestor)
-    for i in l_ancestor | set([pri_node]):
-        with D_LOCK[IRP_instance][i]:
-            setattr(IRP_instance, "{0}_coherent".format(i), True)
-
     logging.debug("Set descendant coherence to False: %s", l_descendant)
     for i in l_descendant:
         with D_LOCK[IRP_instance][i]:
             setattr(IRP_instance, "{0}_coherent".format(i), False)
 
+    logging.debug("Set ancestor coherence to True: %s", l_ancestor)
+    for i in l_ancestor | set([pri_node]):
+        with D_LOCK[IRP_instance][i]:
+            setattr(IRP_instance, "{0}_coherent".format(i), True)
 
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
