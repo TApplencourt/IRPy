@@ -3,7 +3,7 @@
 from irpy import property_irp_leaves_mutables
 from irpy import property_irp
 from irpy import property_irp_mutable
-
+from irpy import property_irp_force_recompute
 
 class Trivial(object):
     '''
@@ -70,6 +70,16 @@ class TestIRP(unittest.TestCase):
         self.f.d = 1
         self.assertEqual(self.f.a, 1111)
 
+    def test_force_recompute(self):
+        """The tree have change, some node are now invalid"""
+        self.f.a
+        self.f.a = 1113
+        try:
+            self.f.d
+        except AttributeError:
+            property_irp_force_recompute(self.f,"d")
+        finally:
+            self.assertEqual(self.f.d, 1)
 
 if __name__ == '__main__':
     #This overuse of logging module is require by conda bluid...

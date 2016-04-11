@@ -240,3 +240,10 @@ def property_irp_leaves_mutables(*irp_leaf):
         return func_wrapper
 
     return leaf_decorator
+
+
+def property_irp_force_recompute(obj,node):
+    pri_node = "_{0}".format(node)
+
+    for pn in irp_descendant(obj,pri_node) | set([pri_node]):
+        setattr(obj, "%s_coherent"%pn, True)
