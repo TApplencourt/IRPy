@@ -11,13 +11,18 @@ D_INIT = defaultdict(lambda: defaultdict(lambda: False))
 #Handle your lock stack
 D_LOCK = defaultdict(lambda: defaultdict(lambda: Lock()))
 
+
+def appendattr(object,name,value):
+    s = getattr(object, name)
+    setattr(object, name, set([value]) | s)
+
 #  _                                            
 # |_ _  | |  _         _|_ |_   _     _  _. ._  
 # | (_) | | (_) \/\/    |_ | | (/_   _> (_| |_) 
-#                                           |   
+#                                           |
 def irp_sap(IRP_instance, node, direction, visited=None):
     """
-    Direction is $parents or $children, recurse folowing this
+    Direction is $parents or $children, recurse accordingly
     """
     if visited is None:
         visited = set()
@@ -56,7 +61,7 @@ def irp_descendant(IRP_instance, node):
 def get_irp_node(IRP_instance, provider, pri_node):
     """
     'provider' is a function used to compute the node.
-    'pri_node', is pri value of the node ("_node").
+    'pri_node', is the private value of the node ("_node").
     'IRP_instance' is an instance of the class who use IRPy.
 
         First, this function return the 'pri_node' value,
@@ -65,24 +70,25 @@ def get_irp_node(IRP_instance, provider, pri_node):
         Secondly, We handle your own stack of function execution
                in order to add into ${pri_node}_parent all
                the caller.
-
+        Finally, we restun the value of the node.
     This function is (maybe) trade safe.
     """
+
+    logging.debug("Ask for %s", pri_node)
     with D_LOCK[IRP_instance][pri_node]:
 
-        logging.debug("Ask for %s", pri_node)
-
+        #~=~=~
         #Handle the  execution stack
+        #~=~=~
         caller_name = D_PATH[IRP_instance][-1]
-
         D_PATH[IRP_instance].append(pri_node)
 
-        #Get and set the value node
-
-        coh = "{0}_coherent".format(pri_node)
-
-        if not getattr(IRP_instance, coh):
+        if not getattr(IRP_instance, "%s_coherent" % pri_node):
             raise AttributeError, "Node is incoherent {0}".format(pri_node)
+
+        #~=~=~
+        #Get and set the value node
+        #~=~=~
 
         try:
             value = getattr(IRP_instance, pri_node)
@@ -94,21 +100,19 @@ def get_irp_node(IRP_instance, provider, pri_node):
         else:
             logging.debug("Already provided")
 
+        #~=~=~
         #Handle the mutability
+        #~=~=~
+
         if caller_name:
 
             #Set parent
             local_parent = "{0}_parents".format(pri_node)
-            s = getattr(IRP_instance, local_parent)
-            setattr(IRP_instance, local_parent, set([caller_name]) | s)
+            appendattr(IRP_instance,local_parent,caller_name)
 
             #Set children
             local_child = "{0}_children".format(caller_name)
-            s = getattr(IRP_instance, local_child)
-            setattr(IRP_instance, local_child, set([pri_node]) | s)
-
-        #Handle your execution stack
-        assert (D_PATH[IRP_instance].pop() == pri_node)
+            appendattr(IRP_instance,local_child,pri_node)
 
     return value
 
@@ -116,11 +120,11 @@ def get_irp_node(IRP_instance, provider, pri_node):
 def set_irp_node(IRP_instance, provider, pri_node, value):
     """
     'provider' is a function used to compute the node.
-    'pri_node', is pri value of the node ("_node").
+    'pri_node', is the private value of the node ("_node").
     'parent' is the node who want to access to this particular node.
     'value' is the value of the node who want to set.
 
-    First we remove all the pri variable of the node who use this 
+    First we remove all the private variable of the node who use this 
         particular node. Then we set the new value
 
     This function is (maybe) trade safe.  
@@ -135,7 +139,6 @@ def set_irp_node(IRP_instance, provider, pri_node, value):
 
     logging.debug("Unset parents: %s", l_ancestor)
     for i in l_ancestor:
-
         with D_LOCK[IRP_instance][i]:
             delattr(IRP_instance, i)
 
@@ -162,7 +165,7 @@ class property_irp(object):
 
     Provider: If a function who will be used to compute the node
     Str_provider: If the name of the node
-    Immutability: If immuntabilty is set you cannot set the node
+    Immutability: If immutability is set you cannot set the node
     """
 
     def __init__(self, provider, str_provider=None, immutability=True):
@@ -176,7 +179,7 @@ class property_irp(object):
     def set_obj_attr(self, obj):
 
         #For each instance of the provider initiante somme ussfull values
-        if not D_INIT[self.str_provider][obj]:
+        if not D_INIT[obj][self.str_provider]:
 
             d = {
                 "_{0}_children": set(),
@@ -187,7 +190,7 @@ class property_irp(object):
             for attr, value in d.items():
                 setattr(obj, attr.format(self.str_provider), value)
 
-            D_INIT[self.str_provider][obj] = True
+            D_INIT[obj][self.str_provider] = True
 
     def __get__(self, obj, objtype):
         "Get the value of the node"
@@ -207,10 +210,7 @@ class property_irp(object):
 
 def property_irp_mutable(provider):
     """
-    'provider' is a function.
-
-    This is the decorator. It is really similar to the 'property' function.
-    In fact we return a property with custom fget and fset
+    Return a property_irp with false set to False
     """
     return property_irp(provider=provider, immutability=False)
 
