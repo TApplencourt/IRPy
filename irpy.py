@@ -222,12 +222,13 @@ def property_irp_leaves_mutables(*irp_leaf):
     'We set the new property and the we execute the function'
 
     def leaf_decorator(func):
+
         def func_wrapper(self, *args, **kwargs):
 
             for str_provider in irp_leaf:
 
                 def provider(self):
-                    return getattr(self, self.pri_node)
+                  return getattr(self,"init_%s"%str_provider)
 
                 p = property_irp(provider=provider,
                                  str_provider=str_provider,
@@ -244,6 +245,12 @@ def property_irp_leaves_mutables(*irp_leaf):
 
 def property_irp_force_recompute(obj,node):
     pri_node = "_{0}".format(node)
+    delattr(obj,pri_node)
 
     for pn in irp_descendant(obj,pri_node) | set([pri_node]):
         setattr(obj, "%s_coherent"%pn, True)
+
+    x = getattr(obj,node)
+    setattr(obj,node,x)
+
+

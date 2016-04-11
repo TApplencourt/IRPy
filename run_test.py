@@ -5,6 +5,24 @@ from irpy import property_irp
 from irpy import property_irp_mutable
 from irpy import property_irp_force_recompute
 
+import logging
+
+
+def loggin_debug():
+
+    logger = logging.getLogger()
+
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+
+        str_ = '[%(relativeCreated)d ms] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
+        formatter = logging.Formatter(str_)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+    logger.setLevel(logging.DEBUG)
+
+
 class Trivial(object):
     '''
     a = b + 1000
@@ -16,7 +34,7 @@ class Trivial(object):
 
     @property_irp_leaves_mutables("d")
     def __init__(self, d):
-        self.d = d
+        self.init_d = d
 
     @property_irp_mutable
     def a(self):
@@ -80,7 +98,9 @@ class TestIRP(unittest.TestCase):
             property_irp_force_recompute(self.f,"d")
         finally:
             self.assertEqual(self.f.d, 1)
+            self.assertEqual(self.f.a, 1111)
 
 if __name__ == '__main__':
     #This overuse of logging module is require by conda bluid...
     unittest.main()
+
