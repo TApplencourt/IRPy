@@ -117,7 +117,7 @@ def get_irp_node(IRP_instance, provider, pri_node):
     return value
 
 
-def set_irp_node(IRP_instance, pri_node, value, pri_node_leaf=None):
+def set_irp_node(IRP_instance, pri_node, value, leaf=False):
     """
     'pri_node', is the private value of the node ("_node").
     'parent' is the node who want to access to this particular node.
@@ -133,7 +133,8 @@ def set_irp_node(IRP_instance, pri_node, value, pri_node_leaf=None):
     with D_LOCK[IRP_instance][pri_node]:
 
         setattr(IRP_instance, pri_node, value)
-        if pri_node_leaf:
+        if leaf:
+            pri_node_leaf = "%s_leaf" % pri_node
             setattr(IRP_instance, pri_node_leaf, value)
 
     l_ancestor = irp_ancestor(IRP_instance, pri_node)
@@ -220,9 +221,7 @@ class property_irp(object):
             if not self.leaf:
                 set_irp_node(obj, self.pri_node, value)
             else:
-
-                pri_node_leaf = "%s_leaf" % self.pri_node
-                set_irp_node(obj, self.pri_node, value, pri_node_leaf=pri_node_leaf)
+                set_irp_node(obj, self.pri_node, value, leaf=True)
                 self.leaf = False
 
 

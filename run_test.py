@@ -98,7 +98,7 @@ class TestTrivialMutable(unittest.TestCase):
         
         self.assertEqual(self.f.a, 111)
 
-        self.f.b = 112
+        self.f.a = 112
 
         property_irp_force_recompute(self.f,"c")
         self.assertEqual(self.f.a, 111)
