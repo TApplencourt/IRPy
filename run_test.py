@@ -111,6 +111,15 @@ if __name__ == '__main__':
     #This overuse of logging module is require by conda bluid...
 
     loggin_debug()
+
+    F = Trivial(d=1)
+    print F.a
+
+    F.b = 9
+    print F.a
+ #
+    F.d = 1
+    print F.a
 #
 #    logging.info(NotTrivialFunction.__doc__)
 #
@@ -123,9 +132,9 @@ if __name__ == '__main__':
 #    logging.info('Show the coherence and mutability')
 
 #    loggin_info()
-    logging.info(NewtonRaphson.__doc__)
-    F=NewtonRaphson(x=1)
-
-    F.solve()
-    assert (abs(F.x -0.739085133) < 1.e-9)
-    logging.info("Success! x={0:.9f}".format(F.x))
+#    logging.info(NewtonRaphson.__doc__)
+#    F=NewtonRaphson(x=1)
+#
+#    F.solve()
+#    assert (abs(F.x -0.739085133) < 1.e-9)
+#    logging.info("Success! x={0:.9f}".format(F.x))
