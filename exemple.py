@@ -6,6 +6,7 @@ from irpy import property_irp_leaves_mutables
 
 import logging
 
+
 def loggin_debug():
 
     logger = logging.getLogger()
@@ -17,8 +18,9 @@ def loggin_debug():
         formatter = logging.Formatter(str_)
         handler.setFormatter(formatter)
         logger.addHandler(handler)
-    
+
     logger.setLevel(logging.DEBUG)
+
 
 def loggin_info():
     logger = logging.getLogger()
@@ -32,6 +34,7 @@ def loggin_info():
         logger.addHandler(handler)
 
     logger.setLevel(logging.INFO)
+
 
 class NotTrivialFunction(object):
     '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
@@ -73,14 +76,16 @@ class NotTrivialFunction(object):
     def fu(self, x, y):
         return x + y + 1
 
+
 from math import cos, sin
+
 
 class NewtonRaphson(object):
     '''Solve cos x - x = 0 by Newton Rapshon's algorithm'''
 
     @property_irp_leaves_mutables("x")
-    def __init__(self,x):
-        self.x = x        
+    def __init__(self, x):
+        self.x = x
 
     @property_irp
     def f(self):
@@ -101,7 +106,7 @@ class NewtonRaphson(object):
 
 
 if __name__ == '__main__':
-    
+
     #This overuse of logging module is require by conda bluid...
 
     loggin_debug()
@@ -118,8 +123,8 @@ if __name__ == '__main__':
 
     loggin_info()
     logging.info(NewtonRaphson.__doc__)
-    F=NewtonRaphson(x=1)
+    F = NewtonRaphson(x=1)
 
     F.solve()
-    assert (abs(F.x -0.739085133) < 1.e-9)
+    assert (abs(F.x - 0.739085133) < 1.e-9)
     logging.info("Success! x={0:.9f}".format(F.x))
