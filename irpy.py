@@ -11,10 +11,10 @@ D_INIT = defaultdict(lambda: defaultdict(lambda: False))
 #Handle your lock stack
 D_LOCK = defaultdict(lambda: defaultdict(lambda: Lock()))
 
-
-def appendattr(object,name,value):
+def appendattr(object, name, value):
     s = getattr(object, name)
     setattr(object, name, set([value]) | s)
+
 
 #  _                                            
 # |_ _  | |  _         _|_ |_   _     _  _. ._  
@@ -108,18 +108,17 @@ def get_irp_node(IRP_instance, provider, pri_node):
 
             #Set parent
             local_parent = "{0}_parents".format(pri_node)
-            appendattr(IRP_instance,local_parent,caller_name)
+            appendattr(IRP_instance, local_parent, caller_name)
 
             #Set children
             local_child = "{0}_children".format(caller_name)
-            appendattr(IRP_instance,local_child,pri_node)
+            appendattr(IRP_instance, local_child, pri_node)
 
     return value
 
 
-def set_irp_node(IRP_instance, provider, pri_node, value):
+def set_irp_node(IRP_instance, pri_node, value, pri_node_leaf=None):
     """
-    'provider' is a function used to compute the node.
     'pri_node', is the private value of the node ("_node").
     'parent' is the node who want to access to this particular node.
     'value' is the value of the node who want to set.
@@ -132,7 +131,10 @@ def set_irp_node(IRP_instance, provider, pri_node, value):
 
     logging.debug("Set node %s", pri_node)
     with D_LOCK[IRP_instance][pri_node]:
+
         setattr(IRP_instance, pri_node, value)
+        if pri_node_leaf:
+            setattr(IRP_instance, pri_node_leaf, value)
 
     l_ancestor = irp_ancestor(IRP_instance, pri_node)
     l_descendant = irp_descendant(IRP_instance, pri_node)
@@ -140,7 +142,11 @@ def set_irp_node(IRP_instance, provider, pri_node, value):
     logging.debug("Unset parents: %s", l_ancestor)
     for i in l_ancestor:
         with D_LOCK[IRP_instance][i]:
-            delattr(IRP_instance, i)
+
+            try:
+                delattr(IRP_instance, i)
+            except AttributeError:
+                pass
 
     logging.debug("Set descendant coherence to False: %s", l_descendant)
     for i in l_descendant:
@@ -151,6 +157,7 @@ def set_irp_node(IRP_instance, provider, pri_node, value):
     for i in l_ancestor | set([pri_node]):
         with D_LOCK[IRP_instance][i]:
             setattr(IRP_instance, "{0}_coherent".format(i), True)
+
 
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
@@ -170,7 +177,13 @@ class property_irp(object):
     def __init__(self, provider, str_provider=None, immutability=True):
 
         self.provider = provider
-        self.str_provider = str_provider if str_provider else provider.__name__
+
+        if not str_provider:
+            self.str_provider = provider.__name__
+            self.leaf = False
+        else:
+            self.str_provider = str_provider
+            self.leaf = True
 
         self.pri_node = "_{0}".format(self.str_provider)
         self.immutability = immutability
@@ -204,7 +217,13 @@ class property_irp(object):
         if self.immutability:
             raise AttributeError, "Immutable Node {0}".format(self.pri_node)
         else:
-            set_irp_node(obj, self.provider, self.pri_node, value)
+            if not self.leaf:
+                set_irp_node(obj, self.pri_node, value)
+            else:
+
+                pri_node_leaf = "%s_leaf" % self.pri_node
+                set_irp_node(obj, self.pri_node, value, pri_node_leaf=pri_node_leaf)
+                self.leaf = False
 
 
 def property_irp_mutable(provider):
@@ -221,13 +240,12 @@ def property_irp_leaves_mutables(*irp_leaf):
     'We set the new property and the we execute the function'
 
     def leaf_decorator(func):
-
         def func_wrapper(self, *args, **kwargs):
 
             for str_provider in irp_leaf:
 
                 def provider(self):
-                  return getattr(self,"init_%s"%str_provider)
+                    return getattr(self, "_%s_leaf" % str_provider)
 
                 p = property_irp(provider=provider,
                                  str_provider=str_provider,
@@ -242,14 +260,15 @@ def property_irp_leaves_mutables(*irp_leaf):
     return leaf_decorator
 
 
-def property_irp_force_recompute(obj,node):
+def property_irp_force_recompute(obj, node):
     pri_node = "_{0}".format(node)
-    delattr(obj,pri_node)
 
-    for pn in irp_descendant(obj,pri_node) | set([pri_node]):
-        setattr(obj, "%s_coherent"%pn, True)
+    try:
+        delattr(obj, pri_node)
+    except AttributeError:
+        pass
+    else:
+        setattr(obj, "%s_coherent" % pri_node, True)
 
-    x = getattr(obj,node)
-    setattr(obj,node,x)
-
-
+    value = getattr(obj, node)
+    set_irp_node(obj, pri_node, value)

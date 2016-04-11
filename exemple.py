@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     logging.info('Show the coherence and mutability')
 
-    loggin_info()
+    loggin_debug()
     logging.info(NewtonRaphson.__doc__)
     F = NewtonRaphson(x=1)
 
