@@ -82,7 +82,7 @@ class NotTrivialFunction(object):
 ```
 
 In this example `d[1,5]`,`u[1,2]`,`v`,`w`,`t` are the node of the production tree. One can see that these properties have no explicit parameter 
-(in fact, IRPy mean [**I**mplicit **R**eference **P**arameter](\[0\]: http://osp.chickenkiller.com/mediawiki/index.php?title=IRP) for P**y**thon).
+(in fact, IRPy mean [**I**mplicit **R**eference **P**arameter](http://osp.chickenkiller.com/mediawiki/index.php?title=IRP) for P**y**thon).
 
 This simplify dramatically simplify program development. Indeed:
 - The global production tree is not known by the programmer, the programmer doesn’t handle the execution sequence. Just ask a property, it will be computed on the fly:
@@ -95,7 +95,7 @@ assert (f.t == 42)
 
 
 But, the same data will be re computed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just use `property_lazy` for doing so 
-(all these exemple can be found in the [exemple.py](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
+(all these exemple can be found in the [exemple](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
 
 ```python
 class NotTrivialFunction(object):
