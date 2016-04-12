@@ -21,11 +21,11 @@ conda install -c https://conda.anaconda.org/tapplencourt irpy
 
 ##Usage
 
-- `lazy_property`: A simple lazy property;
-- `lazy_property_mutable`: This property can change. When doing so, all these ancestors are invalided. And all these descendant are now unattainable;
-- `lazy_property_leaf(mutable,immutable)`: This function is to create node from values defined in the `__init__` class method.
+- `lazy_property`: a simple lazy property;
+- `lazy_property_mutable`: this property can change. When doing so, all these ancestors are invalided, they will be recomputed when needed. Futhermore, all these descendant are now unattainable;
+- `lazy_property_leaf(mutable,immutable)`: this function allow the creating of node from values defined in the `__init__` class method.
 
-## But why? Or What is a scientific code?
+## But why? Or *What is a scientific code*?
 A program is a function of its input data:
 ```
 output = program (input)
