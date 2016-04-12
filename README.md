@@ -17,7 +17,7 @@ pip install irpy
 ```
 conda install -c https://conda.anaconda.org/tapplencourt irpy
 ```
-- Or you can manually add `irpy.py` to `PYTHONPATH` 
+- Or you can manually add [irpy.py](https://raw.githubusercontent.com/TApplencourt/IRPy/master/irpy.py) to `PYTHONPATH` 
 
 ##Usage
 
