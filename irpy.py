@@ -7,9 +7,10 @@ from threading import Lock
 #Handle your execution stack
 D_PATH = defaultdict(lambda: [None])
 #Handle the instance variable
-D_INIT = defaultdict(lambda: defaultdict(lambda: False))
+D_ONLY_ONCE = defaultdict(lambda: defaultdict(lambda: False))
 #Handle your lock stack
 D_LOCK = defaultdict(lambda: defaultdict(lambda: Lock()))
+
 
 def appendattr(object, name, value):
     s = getattr(object, name)
@@ -20,37 +21,37 @@ def appendattr(object, name, value):
 # |_ _  | |  _         _|_ |_   _     _  _. ._  
 # | (_) | | (_) \/\/    |_ | | (/_   _> (_| |_) 
 #                                           |
-def irp_sap(IRP_instance, node, direction, visited=None):
+def irp_sap(lazy_obj, pri_node, direction, visited=None):
     """
     Direction is $parents or $children, recurse accordingly
     """
     if visited is None:
         visited = set()
 
-    visited.add(node)
+    visited.add(pri_node)
 
-    s = getattr(IRP_instance, "{0}_{1}".format(node, direction))
+    s = getattr(lazy_obj, "{0}_{1}".format(pri_node, direction))
 
     for next_ in s - visited:
-        irp_sap(IRP_instance, next_, direction, visited)
+        irp_sap(lazy_obj, next_, direction, visited)
 
     return visited
 
 
-def irp_ancestor(IRP_instance, node):
+def irp_ancestor(lazy_obj, pri_node):
     """
-    Return the ancestor: A node reachable by repeated proceeding from child to parent.
-    The parent of a node is stored in _$node_parent. 
+    Return the ancestor: A pri_node reachable by repeated proceeding from child to parent.
+    The parent of a pri_node is stored in _$pri_node_parent. 
     """
-    return irp_sap(IRP_instance, node, "parents") - set([node])
+    return irp_sap(lazy_obj, pri_node, "parents") - set([pri_node])
 
 
-def irp_descendant(IRP_instance, node):
+def irp_descendant(lazy_obj, pri_node):
     """
-    Return the descendant: A node reachable by repeated proceeding from parent to child.
-    The parent of a node is stored in _$node_child. 
+    Return the descendant: A pri_node reachable by repeated proceeding from parent to child.
+    The parent of a pri_node is stored in _$pri_node_child. 
     """
-    return irp_sap(IRP_instance, node, "children") - set([node])
+    return irp_sap(lazy_obj, pri_node, "children") - set([pri_node])
 
 
 # ___                                                  
@@ -58,11 +59,11 @@ def irp_descendant(IRP_instance, node):
 # _|_   (_ (_| | |   |_   (_| (/_ |_   | | (_) (_| (/_ 
 #                          _|
 #Satisfaction
-def get_irp_node(IRP_instance, provider, pri_node):
+def get_irp_node(lazy_obj, pri_node, provider):
     """
     'provider' is a function used to compute the node.
     'pri_node', is the private value of the node ("_node").
-    'IRP_instance' is an instance of the class who use IRPy.
+    'lazy_obj' is an instance of the class who use IRPy.
 
         First, this function return the 'pri_node' value,
                if it not existing yet, we will set it.
@@ -70,20 +71,20 @@ def get_irp_node(IRP_instance, provider, pri_node):
         Secondly, We handle your own stack of function execution
                in order to add into ${pri_node}_parent all
                the caller.
-        Finally, we restun the value of the node.
+        Finally, we return the value of the node.
     This function is (maybe) trade safe.
     """
 
     logging.debug("Ask for %s", pri_node)
-    with D_LOCK[IRP_instance][pri_node]:
+    with D_LOCK[lazy_obj][pri_node]:
 
         #~=~=~
         #Handle the  execution stack
         #~=~=~
-        caller_name = D_PATH[IRP_instance][-1]
-        D_PATH[IRP_instance].append(pri_node)
+        caller_name = D_PATH[lazy_obj][-1]
+        D_PATH[lazy_obj].append(pri_node)
 
-        if not getattr(IRP_instance, "%s_coherent" % pri_node):
+        if not getattr(lazy_obj, "%s_coherent" % pri_node):
             raise AttributeError, "Node is incoherent {0}".format(pri_node)
 
         #~=~=~
@@ -91,12 +92,12 @@ def get_irp_node(IRP_instance, provider, pri_node):
         #~=~=~
 
         try:
-            value = getattr(IRP_instance, pri_node)
+            value = getattr(lazy_obj, pri_node)
         except AttributeError:
             logging.debug("Provide")
 
-            value = provider(IRP_instance)
-            setattr(IRP_instance, pri_node, value)
+            value = provider(lazy_obj)
+            setattr(lazy_obj, pri_node, value)
         else:
             logging.debug("Already provided")
 
@@ -108,16 +109,16 @@ def get_irp_node(IRP_instance, provider, pri_node):
 
             #Set parent
             local_parent = "{0}_parents".format(pri_node)
-            appendattr(IRP_instance, local_parent, caller_name)
+            appendattr(lazy_obj, local_parent, caller_name)
 
             #Set children
             local_child = "{0}_children".format(caller_name)
-            appendattr(IRP_instance, local_child, pri_node)
+            appendattr(lazy_obj, local_child, pri_node)
 
     return value
 
 
-def set_irp_node(IRP_instance, pri_node, value, leaf=False):
+def set_irp_node(lazy_obj, pri_node, value):
     """
     'pri_node', is the private value of the node ("_node").
     'parent' is the node who want to access to this particular node.
@@ -130,69 +131,67 @@ def set_irp_node(IRP_instance, pri_node, value, leaf=False):
     """
 
     logging.debug("Set node %s", pri_node)
-    with D_LOCK[IRP_instance][pri_node]:
+    with D_LOCK[lazy_obj][pri_node]:
+        setattr(lazy_obj, pri_node, value)
 
-        setattr(IRP_instance, pri_node, value)
-        if leaf:
-            pri_node_leaf = "%s_leaf" % pri_node
-            setattr(IRP_instance, pri_node_leaf, value)
-
-    l_ancestor = irp_ancestor(IRP_instance, pri_node)
-    l_descendant = irp_descendant(IRP_instance, pri_node)
+    #Now handle the mutability
+    l_ancestor = irp_ancestor(lazy_obj, pri_node)
+    l_descendant = irp_descendant(lazy_obj, pri_node)
 
     logging.debug("Unset parents: %s", l_ancestor)
-    for i in l_ancestor:
-        with D_LOCK[IRP_instance][i]:
+    for parent in l_ancestor:
 
+        with D_LOCK[lazy_obj][parent]:
+            #Maybe somebody already delete this private node
             try:
-                delattr(IRP_instance, i)
+                delattr(lazy_obj, parent)
             except AttributeError:
                 pass
 
     logging.debug("Set descendant coherence to False: %s", l_descendant)
-    for i in l_descendant:
-        with D_LOCK[IRP_instance][i]:
-            setattr(IRP_instance, "{0}_coherent".format(i), False)
+    for child in l_descendant:
+        with D_LOCK[lazy_obj][child]:
+            setattr(lazy_obj, "{0}_coherent".format(child), False)
 
     logging.debug("Set ancestor coherence to True: %s", l_ancestor)
-    for i in l_ancestor | set([pri_node]):
-        with D_LOCK[IRP_instance][i]:
-            setattr(IRP_instance, "{0}_coherent".format(i), True)
+    for parent in l_ancestor | set([pri_node]):
+        with D_LOCK[lazy_obj][parent]:
+            setattr(lazy_obj, "{0}_coherent".format(parent), True)
 
 
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
 # |_/ (/_ (_ (_) | (_|  |_ (_) |  
 #
-class property_irp(object):
+class lazy_property(object):
     """
     My little Property
     My little Property
     My little Property...  friend
 
     Provider: If a function who will be used to compute the node
-    Str_provider: If the name of the node
+    node: If the name of the node
     Immutability: If immutability is set you cannot set the node
     """
 
-    def __init__(self, provider, str_provider=None, immutability=True):
+    def __init__(self, provider, node=None, immutability=True):
 
         self.provider = provider
 
-        if not str_provider:
-            self.str_provider = provider.__name__
+        if not node:
+            self.node = provider.__name__
             self.leaf = False
         else:
-            self.str_provider = str_provider
+            self.node = node
             self.leaf = True
 
-        self.pri_node = "_{0}".format(self.str_provider)
+        self.pri_node = "_{0}".format(self.node)
         self.immutability = immutability
 
     def set_obj_attr(self, obj):
-
-        #For each instance of the provider initiante somme ussfull values
-        if not D_INIT[obj][self.str_provider]:
+        "Initiate some useful private value"
+        "Do this only once"
+        if not D_ONLY_ONCE[obj][self.node]:
 
             d = {
                 "_{0}_children": set(),
@@ -201,73 +200,58 @@ class property_irp(object):
             }
 
             for attr, value in d.items():
-                setattr(obj, attr.format(self.str_provider), value)
+                setattr(obj, attr.format(self.node), value)
 
-            D_INIT[obj][self.str_provider] = True
+            D_ONLY_ONCE[obj][self.node] = True
 
     def __get__(self, obj, objtype):
         "Get the value of the node"
         self.set_obj_attr(obj)
-
-        return get_irp_node(obj, self.provider, self.pri_node)
+        return get_irp_node(obj, self.pri_node, self.provider)
 
     def __set__(self, obj, value):
-        "Set the value of the node"
+        """Set the value of the node
+        But wait, leaves are "gradual typed" variable! Youpi!
+        Idea borrowed from the-worst-programming-language-ever (http://bit.ly/13tc6XW)
+        """
+
         self.set_obj_attr(obj)
 
-        if self.immutability:
+        if self.leaf and self.immutability:
+            set_irp_node(obj, self.pri_node, value)
+            self.leaf = False
+        elif self.immutability:
             raise AttributeError, "Immutable Node {0}".format(self.pri_node)
         else:
-            if not self.leaf:
-                set_irp_node(obj, self.pri_node, value)
-            else:
-                set_irp_node(obj, self.pri_node, value, leaf=True)
-                self.leaf = False
+            set_irp_node(obj, self.pri_node, value)
 
 
-def property_irp_mutable(provider):
+def lazy_property_mutable(provider):
     """
-    Return a property_irp with false set to False
+    Return a lazy_property with false set to False
     """
-    return property_irp(provider=provider, immutability=False)
+    return lazy_property(provider=provider, immutability=False)
 
 
-def property_irp_leaves_mutables(*irp_leaf):
-    "This a named decorator"
-    'For all the node in irp_leaf we create the property associated'
-
-    'We set the new property and the we execute the function'
+def lazy_property_leaves(mutables=[], immutables=[]):
+    """This a named decorator"""
 
     def leaf_decorator(func):
         def func_wrapper(self, *args, **kwargs):
 
-            for str_provider in irp_leaf:
+            for node in set(immutables) | set(mutables):
 
                 def provider(self):
-                    return getattr(self, "_%s_leaf" % str_provider)
+                    return getattr(self, "_%s" % node)
 
-                p = property_irp(provider=provider,
-                                 str_provider=str_provider,
-                                 immutability=False)
-                #If this ugly? Yeah... Is this an issue? I don't realy know
-                setattr(self.__class__, str_provider, p)
+                p = lazy_property(provider=provider,
+                                  node=node,
+                                  immutability=node in immutables)
+                #If this ugly? Yeah... Is this an issue? I don't really know
+                setattr(self.__class__, node, p)
 
             return func(self, *args, **kwargs)
 
         return func_wrapper
 
     return leaf_decorator
-
-
-def property_irp_force_recompute(obj, node):
-    pri_node = "_{0}".format(node)
-
-    try:
-        delattr(obj, pri_node)
-    except AttributeError:
-        pass
-    else:
-        setattr(obj, "%s_coherent" % pri_node, True)
-
-    value = getattr(obj, node)
-    set_irp_node(obj, pri_node, value)

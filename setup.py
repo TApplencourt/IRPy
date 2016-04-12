@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 
 setup(name="irpy",
-      version=0.2,
+      version=0.3,
       description = 'IRP for Python',
       py_modules=['irpy'],
       author='Thomas Applencourt',
