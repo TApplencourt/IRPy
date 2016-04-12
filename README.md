@@ -86,8 +86,8 @@ In this example `d[1,5]`,`u[1,2]`,`v`,`w`,`t` are the node of the production tre
 
 This simplify dramatically simplify program development. Indeed:
 - The global production tree is not known by the programmer, the programmer doesn’t handle the execution sequence. Just ask a property, it will be computed on the fly:
-```
-f = NotTrivialFunction(1, 5, 8, 10, 7)
+```python
+f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10, d=7)
 assert (f.t == 42)
 ```
 - The program is easy to write (adding a new `property` only require to know about the name of theses implicit parameters); 
@@ -141,7 +141,7 @@ class NotTrivialFunction(object):
 In this IRP paradigm as in `irppy.py` node are by default immutable. This mean that you cannot set these node by hand. The only way to compute a node is by using the function who have be decorated. 
 For example:
 
-```
+```python
 f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10,d5=7)
 f.u1 = 2
 ```
