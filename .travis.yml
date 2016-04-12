@@ -4,4 +4,4 @@ python:
  - "2.7"
  - "3.5"
 
-script: run_test.py
+script: ./run_test.py
