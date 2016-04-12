@@ -1,5 +1,7 @@
 ![](https://zippy.gfycat.com/SarcasticOpenHedgehog.gif)
 
+#[![](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy)]
+
 IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties.
 Lazy evaluation of properties are quite common ([Werkzeug](http://werkzeug.pocoo.org/docs/0.11/utils/#werkzeug.utils.cached_property) for example),
 but coherence problems can arise if you have inference rule between mutable properties. The aim of this library is to solve this problem.
