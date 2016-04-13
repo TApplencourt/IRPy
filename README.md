@@ -1,6 +1,7 @@
 ![](https://zippy.gfycat.com/SarcasticOpenHedgehog.gif)
 
-#[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy)
+#[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy) [![TravisCI](https://img.shields.io/travis/TApplencourt/IRPy.svg)]()
+
 
 IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties.
 Lazy evaluation of properties are quite common ([Werkzeug](http://werkzeug.pocoo.org/docs/0.11/utils/#werkzeug.utils.cached_property) for example),
@@ -16,15 +17,15 @@ pip install irpy
 ```
 conda install -c https://conda.anaconda.org/tapplencourt irpy
 ```
-- Or you can manually add `irpy.py` to `PYTHONPATH` 
+- Or you can manually add [irpy.py](https://raw.githubusercontent.com/TApplencourt/IRPy/master/irpy.py) to `PYTHONPATH` 
 
 ##Usage
 
-- `lazy_property`: A simple lazy property;
-- `lazy_property_mutable`: This property can change. When doing so, all these ancestors are invalided. And all these descendant are now unattainable;
-- `lazy_property_leaf(mutable,immutable)`: This function is to create node from values defined in the `__init__` class method.
+- `lazy_property`: a simple lazy property;
+- `lazy_property_mutable`: this property can change. When doing so, all these ancestors are invalided, they will be recomputed when needed. Futhermore, all these descendant are now unattainable;
+- `lazy_property_leaf(mutable,immutable)`: this function allow the creating of node from values defined in the `__init__` class method.
 
-## But why? Or What is a scientific code?
+## But why? Or *What is a scientific code*?
 A program is a function of its input data:
 ```
 output = program (input)
@@ -81,12 +82,12 @@ class NotTrivialFunction(object):
 ```
 
 In this example `d[1,5]`,`u[1,2]`,`v`,`w`,`t` are the node of the production tree. One can see that these properties have no explicit parameter 
-(in fact, IRPy mean [**I**mplicit **R**eference **P**arameter](\[0\]: http://osp.chickenkiller.com/mediawiki/index.php?title=IRP) for P**y**thon).
+(in fact, IRPy mean [**I**mplicit **R**eference **P**arameter](http://osp.chickenkiller.com/mediawiki/index.php?title=IRP) for P**y**thon).
 
 This simplify dramatically simplify program development. Indeed:
 - The global production tree is not known by the programmer, the programmer doesn’t handle the execution sequence. Just ask a property, it will be computed on the fly:
-```
-f = NotTrivialFunction(1, 5, 8, 10, 7)
+```python
+f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10, d=7)
 assert (f.t == 42)
 ```
 - The program is easy to write (adding a new `property` only require to know about the name of theses implicit parameters); 
@@ -94,7 +95,7 @@ assert (f.t == 42)
 
 
 But, the same data will be re computed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just use `property_lazy` for doing so 
-(all these exemple can be found in the [exemple.py](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
+(all these exemple can be found in the [exemple](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
 
 ```python
 class NotTrivialFunction(object):
@@ -140,7 +141,7 @@ class NotTrivialFunction(object):
 In this IRP paradigm as in `irppy.py` node are by default immutable. This mean that you cannot set these node by hand. The only way to compute a node is by using the function who have be decorated. 
 For example:
 
-```
+```python
 f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10,d5=7)
 f.u1 = 2
 ```
