@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-'''
-@author: T. Applencourt
-'''
-
+import os
 from setuptools import setup
 
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 setup(name="irpy",
-      version=0.3,
+      version="0.3.1",
       description = 'IRP for Python',
       long_description=read('README.md'),
       py_modules=['irpy'],
