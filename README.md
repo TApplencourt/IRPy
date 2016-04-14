@@ -3,7 +3,7 @@
 #[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy) [![TravisCI](https://img.shields.io/travis/TApplencourt/IRPy.svg)]() [![License](https://img.shields.io/pypi/l/irpy.svg)](http://www.wtfpl.net/)
 
 
-IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties.
+IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties (`property` that use `properties` in their declaration and so forth).
 Lazy evaluation of properties are quite common ([Werkzeug](http://werkzeug.pocoo.org/docs/0.11/utils/#werkzeug.utils.cached_property) for example),
 but coherence problems can arise if you have inference rule between mutable properties. The aim of this library is to solve this problem.
 
@@ -19,13 +19,12 @@ conda install -c https://conda.anaconda.org/tapplencourt irpy
 ```
 - Or you can manually add [irpy.py](https://raw.githubusercontent.com/TApplencourt/IRPy/master/irpy.py) to `PYTHONPATH` 
 
-##Usage
-
+##API
 - `lazy_property`: a simple lazy property;
-- `lazy_property_mutable`: this property can change. When doing so, all these ancestors are invalided, they will be recomputed when needed. Futhermore, all these descendant are now unattainable;
-- `lazy_property_leaf(mutable,immutable)`: this function allow the creating of node from values defined in the `__init__` class method.
+- `lazy_property_mutable`: a lazy property that can change. When doing so, all of these ancestors are invalided and will be recomputed when needed. Futhermore, all of these descendants are now unattainables;
+- `lazy_property_leaf(mutable,immutable)`: this function allow node creation's from values defined in the `__init__` class method.
 
-## But why? Or *What is a scientific code*?
+## But why i need all of this? Or *What is a scientific code*?
 A program is a function of its input data:
 ```
 output = program (input)
@@ -36,7 +35,7 @@ A program can be represented as a production tree where
 - The nodes are the intermediate variables;
 - The edges represent the relation needs/needed by.
 
-In python, this way of thinking is encouraged by the usage of nested, special object, `property`. Indeed each `property` are one nodes of the production tree, and by nested then you define the edges. 
+In python, this way of thinking is encouraged by the usage of, special object, `property`. Indeed each `property` are one nodes of the production tree, and by nested then you define the edges. 
 
 For example:
 ```python
@@ -90,11 +89,10 @@ This simplify dramatically simplify program development. Indeed:
 f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10, d=7)
 assert (f.t == 42)
 ```
-- The program is easy to write (adding a new `property` only require to know about the name of theses implicit parameters); 
+- The program is easy to write (adding a new `property` only require to know about the name of theses implicit parameters);
 - Any change of dependencies will be handled properly automatically.
 
-
-But, the same data will be re computed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just use `property_lazy` for doing so 
+But, the same data will be recomputed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just use the `property_lazy` decorator for doing so 
 (all these exemple can be found in the [exemple](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
 
 ```python
@@ -138,7 +136,17 @@ class NotTrivialFunction(object):
     def fu(self, x, y):
         return x + y + 1
 ```
-In this IRP paradigm as in `irppy.py` node are by default immutable. This mean that you cannot set these node by hand. The only way to compute a node is by using the function who have be decorated. 
+Now when you, or the interpretor, ask for a node who have already be computed, we just return the saved value. 
+In this exemple:
+```python
+f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10, d=7)
+assert (f.u2 == 19)
+assert (f.t == 42)
+```
+calling `u2`, before or after asking `t`, do not cause any overhead.
+
+
+In this IRP paradigm as in `irppy.py` nodes are by default immutables. This mean that you cannot set these node by hand; the only way to compute a node is by using the function who have be decorated. 
 For example:
 
 ```python
@@ -151,7 +159,8 @@ Will raise an error.
 ##Tricky part: Mutability
 
 In the precedant example, all the node of the production tree are immutable. In a real world application this a quite a limitation.
-For example, in an iterative resolution procedure of an equation (Newton-Raphson), we need to change some node (x <- x - f(x)/f'(x) ) and recompute another accordingly (f(x) and f'(x)) if we ask them again.
+For example, in an iterative resolution procedure of an equation (for exemple the **Newton-Raphson** one), we need to compute node (f(x) and f'(x)), change them (x <- x - f(x)/f'(x) ) and so forth. 
+All the ancestor of the node who are changed need to be recomputed accordingly. In other word, when are changing the value of x, f(x) and f'(x) need to be recomputed.
 
 This is the essential innovation of IRPy. Use the`lazy_property_mutable` and the `lazy_property_leavs(mutables)` functions too define theses mutable nodes.
 
@@ -183,3 +192,8 @@ class NewtonRaphson(object):
 
 See how in the `solve` function, when we modify `x` it change the value of `x_next(x,f(x),f'(x))` accordingly. At anytime, any where you can be sure that all your production tree are in valid state!
 
+```python
+F = NewtonRaphson(x=1)
+F.solve()
+assert (abs(F.x - 0.739085133) < 1.e-9)
+```
