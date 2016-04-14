@@ -106,6 +106,40 @@ class NewtonRaphson(object):
             self.x = self.x_next
 
 
+class WeightFactory(object):
+    '''Dimension of the box (m)'''
+
+    def __init__(self, l1, l2, l3):
+        '''Dimension of the box (m)'''
+        self.l1 = l1
+        self.l2 = l2
+        self.l3 = l3
+
+    @lazy_property_mutable
+    def volume(self):
+        " V = l1 * l2 * l3"
+        return self.l1 * self.l2 * self.l3 
+
+    @lazy_property
+    def density(self):
+        "Volumetric mass density of Iron (kg/m^3)"
+        return 7.87 * 10**3
+
+    @lazy_property_mutable
+    def mass(self):
+        "m = V * d"
+        return self.volume * self.density
+
+    @lazy_property
+    def g(self):
+        "g-force (m/s2) in equator"
+        return 9.7803
+
+    @lazy_property_mutable
+    def weight(self):
+        "In Newton"
+        return self.mass*self.g
+
 if __name__ == '__main__':
 
     #This overuse of logging module is require by conda bluid...
@@ -129,3 +163,10 @@ if __name__ == '__main__':
     F.solve()
     assert (abs(F.x - 0.739085133) < 1.e-9)
     logging.info("Success! x={0:.9f}".format(F.x))
+    
+    f = WeightFactory(1,1,1)
+    assert ( abs(f.weight - 76970.961) < 1.e-9)
+    f.mass = 100
+    assert ( abs(f.weight - 978.03) < 1.e-9)
+    f.volume = 1
+    assert ( abs(f.weight - 76970.961) < 1.e-9)

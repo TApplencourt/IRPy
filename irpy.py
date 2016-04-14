@@ -84,8 +84,24 @@ def get_irp_node(lazy_obj, pri_node, provider):
         caller_name = D_PATH[lazy_obj][-1]
         D_PATH[lazy_obj].append(pri_node)
 
-        if not getattr(lazy_obj, "%s_coherent" % pri_node):
+
+        #~=~=~
+        #Handle the mutability
+        #~=~=~
+
+        if caller_name:
+
+            #Set parent
+            local_parent = "{0}_parents".format(pri_node)
+            appendattr(lazy_obj, local_parent, caller_name)
+
+            #Set children
+            local_child = "{0}_children".format(caller_name)
+            appendattr(lazy_obj, local_child, pri_node)
+
+        if getattr(lazy_obj, "%s_uncoherent" % pri_node):
             raise AttributeError, "Node is incoherent {0}".format(pri_node)
+
 
         #~=~=~
         #Get and set the value node
@@ -101,19 +117,9 @@ def get_irp_node(lazy_obj, pri_node, provider):
         else:
             logging.debug("Already provided")
 
-        #~=~=~
-        #Handle the mutability
-        #~=~=~
 
-        if caller_name:
-
-            #Set parent
-            local_parent = "{0}_parents".format(pri_node)
-            appendattr(lazy_obj, local_parent, caller_name)
-
-            #Set children
-            local_child = "{0}_children".format(caller_name)
-            appendattr(lazy_obj, local_child, pri_node)
+        #Now we can depile the node in our stack 
+        D_PATH[lazy_obj].pop()
 
     return value
 
@@ -148,15 +154,23 @@ def set_irp_node(lazy_obj, pri_node, value):
             except AttributeError:
                 pass
 
-    logging.debug("Set descendant coherence to False: %s", l_descendant)
+    logging.debug("All %s in uncoherent cause of %s", l_descendant, pri_node)
     for child in l_descendant:
         with D_LOCK[lazy_obj][child]:
-            setattr(lazy_obj, "{0}_coherent".format(child), False)
+            appendattr(lazy_obj, "{0}_uncoherent".format(child), pri_node)
 
-    logging.debug("Set ancestor coherence to True: %s", l_ancestor)
+    for parent in getattr(lazy_obj, "%s_uncoherent" % pri_node):
+        logging.debug("%s was uncoherent cause of %s", pri_node, parent)
+        logging.debug("So maybe %s is valid now", irp_descendant(lazy_obj, parent))
+
+        for descendant in irp_descendant(lazy_obj, parent) | set([pri_node]):
+            
+            s = getattr(lazy_obj, "%s_uncoherent" % descendant) - set([parent])
+            setattr(lazy_obj, "{0}_uncoherent".format(descendant), s)
+
     for parent in l_ancestor | set([pri_node]):
         with D_LOCK[lazy_obj][parent]:
-            setattr(lazy_obj, "{0}_coherent".format(parent), True)
+            setattr(lazy_obj, "{0}_uncoherent".format(parent), set())
 
 
 #  _                              
@@ -196,7 +210,7 @@ class lazy_property(object):
             d = {
                 "_{0}_children": set(),
                 "_{0}_parents": set(),
-                "_{0}_coherent": True
+                "_{0}_uncoherent": set()
             }
 
             for attr, value in d.items():
