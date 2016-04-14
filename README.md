@@ -21,7 +21,7 @@ conda install -c https://conda.anaconda.org/tapplencourt irpy
 
 ##API
 - `lazy_property`: a simple lazy property;
-- `lazy_property_mutable`: a lazy property that can change. When doing so, all of these ancestors are invalided and will be recomputed when needed. Futhermore, all of these descendants are now unattainables;
+- `lazy_property_mutable`: a lazy property that can change. When doing so, all of these ancestors are invalided and will be recomputed when needed. Furthermore, all of these descendants are now unattainable;
 - `lazy_property_leaf(mutable,immutable)`: this function allow node creation's from values defined in the `__init__` class method.
 
 ## But why i need all of this? Or *What is a scientific code*?
@@ -93,7 +93,7 @@ assert (f.t == 42)
 - Any change of dependencies will be handled properly automatically.
 
 But, the same data will be recomputed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just use the `property_lazy` decorator for doing so 
-(all these exemple can be found in the [exemple](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
+(all these example can be found in the [example](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
 
 ```python
 class NotTrivialFunction(object):
@@ -146,7 +146,7 @@ assert (f.t == 42)
 calling `u2`, before or after asking `t`, do not cause any overhead.
 
 
-In this IRP paradigm as in `irppy.py` nodes are by default immutables. This mean that you cannot set these node by hand; the only way to compute a node is by using the function who have be decorated. 
+In this IRP paradigm as in `irppy.py` nodes are by default immutable. This mean that you cannot set these node by hand; the only way to compute a node is by using the function who have be decorated. 
 For example:
 
 ```python
@@ -158,8 +158,8 @@ Will raise an error.
 
 ##Tricky part: Mutability
 
-In the precedant example, all the node of the production tree are immutable. In a real world application this a quite a limitation.
-For example, in an iterative resolution procedure of an equation (for exemple the **Newton-Raphson** one), we need to compute node (f(x) and f'(x)), change them (x <- x - f(x)/f'(x) ) and so forth. 
+In the precedent example, all the node of the production tree are immutable. In a real world application this a quite a limitation.
+For example, in an iterative resolution procedure of an equation (e.g. the **Newton-Raphson** one), we need to compute node (f(x) and f'(x)), change them (x <- x - f(x)/f'(x) ) and so forth. 
 All the ancestor of the node who are changed need to be recomputed accordingly. In other word, when are changing the value of x, f(x) and f'(x) need to be recomputed.
 
 This is the essential innovation of IRPy. Use the`lazy_property_mutable` and the `lazy_property_leavs(mutables)` functions too define theses mutable nodes.

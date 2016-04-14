@@ -116,7 +116,9 @@ if __name__ == '__main__':
 
     logging.info('Show the dynamic resolution of node')
     F = NotTrivialFunction(1, 5, 8, 10, 7)
-    assert (F.t == 42)
+
+    print F.u2
+ 
     logging.info('Show the lazy evaluation')
     assert (F.t == 42)
 
