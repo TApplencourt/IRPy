@@ -4,61 +4,146 @@ import logging
 from collections import defaultdict
 from threading import Lock
 
-#Handle your execution stack
-D_PATH = defaultdict(lambda: [None])
 #Handle the instance variable
 D_ONLY_ONCE = defaultdict(lambda: defaultdict(lambda: False))
 #Handle your lock stack
 D_LOCK = defaultdict(lambda: defaultdict(lambda: Lock()))
 
 
-def appendattr(object, name, value):
-    s = getattr(object, name)
-    setattr(object, name, set([value]) | s)
 
+D_DEBUG = False
 
-#  _                                            
-# |_ _  | |  _         _|_ |_   _     _  _. ._  
-# | (_) | | (_) \/\/    |_ | | (/_   _> (_| |_) 
-#                                           |
-def irp_sap(lazy_obj, pri_node, direction, visited=None):
-    """
-    Direction is $parents or $children, recurse accordingly
-    """
-    if visited is None:
-        visited = set()
+if D_DEBUG:
+    #import pylab
+    import networkx as nx
+    D_DG = defaultdict(lambda: nx.DiGraph())
 
-    visited.add(pri_node)
+def DG_plot(self):
 
-    s = getattr(lazy_obj, "{0}_{1}".format(pri_node, direction))
+    import matplotlib.pyplot as plt
+    import pylab
+    from networkx.drawing.nx_agraph import graphviz_layout
 
-    for next_ in s - visited:
-        irp_sap(lazy_obj, next_, direction, visited)
+    plt.clf()
 
-    return visited
+    values = D_DG.values()
+    nb_graph = len(values)
+    for i, D in enumerate(values):
+        
+        plt.subplot(nb_graph, 1, i+1)
+        pos=graphviz_layout(D,prog='dot')
+    
+        node_color = [ D.node[n]['color'] for n in D.nodes()]
+    
+        nx.draw(D,pos,with_labels=True,arrows=True,node_color=node_color)
+            
+    plt.pause(1)
 
+def change_and_plot(lazy_obj, pri_node, color):
+    if D_DEBUG:
+        D_DG[lazy_obj].node[pri_node]['color']= color
+        DG_plot(lazy_obj)
+    
 
-def irp_ancestor(lazy_obj, pri_node):
-    """
-    Return the ancestor: A pri_node reachable by repeated proceeding from child to parent.
-    The parent of a pri_node is stored in _$pri_node_parent. 
-    """
-    return irp_sap(lazy_obj, pri_node, "parents") - set([pri_node])
+def appendattr_lock(object, name, value):
+    with D_LOCK[object][name]:
+        s = getattr(object, name)
+        setattr(object, name, set([value]) | s)
 
+def setattr_lock(object, name, value):
+    with D_LOCK[object][name]:
+        setattr(object, name, value)
 
-def irp_descendant(lazy_obj, pri_node):
-    """
-    Return the descendant: A pri_node reachable by repeated proceeding from parent to child.
-    The parent of a pri_node is stored in _$pri_node_child. 
-    """
-    return irp_sap(lazy_obj, pri_node, "children") - set([pri_node])
-
+def delattr_lock(object, name):
+    with D_LOCK[object][name]:
+        #Maybe somebody already delete this private node
+        try:
+            delattr(object, name)
+        except AttributeError:
+            pass
 
 # ___                                                  
 #  |     _  _. ._ / _|_    _   _ _|_   ._   _   _|  _  
 # _|_   (_ (_| | |   |_   (_| (/_ |_   | | (_) (_| (/_ 
 #                          _|
 #Satisfaction
+def  set_node_value(lazy_obj, pri_node, value):
+
+    def irp_sap(pri_node, direction, visited=None):
+        """
+        Direction is $parents or $children, recurse accordingly
+        """
+        if visited is None:
+            visited = set()
+
+        visited.add(pri_node)
+
+        s = getattr(lazy_obj, "{0}_{1}".format(pri_node, direction))
+
+        for next_ in s - visited:
+            irp_sap(next_, direction, visited)
+
+        return visited
+    
+    def irp_remove_ancestor_cache():
+        l_ancestor = irp_sap(pri_node, "parents",) - set([pri_node])
+    
+        logging.debug("Unset parents: %s", l_ancestor)
+        for parent in l_ancestor:
+            delattr_lock(lazy_obj,parent)
+    
+    def irp_set_uncoherent_ancestor():
+        #Now handle the mutability
+        l_descendant = irp_sap(pri_node, "children") - set([pri_node])
+    
+        logging.debug("All %s in uncoherent cause of %s", l_descendant, pri_node)
+        for child in l_descendant:
+            appendattr_lock(lazy_obj, "{0}_uncoherent".format(child), pri_node)            
+            change_and_plot(lazy_obj,child,'black')
+    
+    def irp_unset_siblings():
+    
+        visited = set()
+    
+        for sibling in getattr(lazy_obj, "%s_uncoherent" % pri_node):
+    
+            l_descendant = irp_sap(sibling, "children")  - visited
+    
+            logging.debug("%s was uncoherent cause of %s", pri_node, sibling)
+            logging.debug("So maybe %s is valid now", l_descendant)
+    
+            for descendant in l_descendant:
+                s = getattr(lazy_obj, "%s_uncoherent" % descendant) - set([sibling])
+                setattr_lock(lazy_obj, "{0}_uncoherent".format(descendant), s)
+                visited.add(descendant)
+    
+    logging.debug("Set node %s", pri_node)
+    setattr_lock(lazy_obj, pri_node, value)
+    irp_remove_ancestor_cache()
+    irp_set_uncoherent_ancestor()
+    irp_unset_siblings()
+
+
+class Stack(object):
+
+    #Handle your execution stack
+    d_path = defaultdict(lambda: [None])
+
+    def __init__(self,lazy_obj, pri_node):
+        self.lazy_obj = lazy_obj
+        self.pri_node = pri_node
+
+    def __enter__(self):
+        with D_LOCK[self.lazy_obj][self.pri_node]:
+            caller_name = Stack.d_path[self.lazy_obj][-1]
+            Stack.d_path[self.lazy_obj].append(self.pri_node)
+
+        return caller_name
+
+    def __exit__(self, type, value, traceback):
+        with D_LOCK[self.lazy_obj][self.pri_node]:
+            Stack.d_path[self.lazy_obj].pop()
+
 def get_irp_node(lazy_obj, pri_node, provider):
     """
     'provider' is a function used to compute the node.
@@ -75,100 +160,52 @@ def get_irp_node(lazy_obj, pri_node, provider):
     This function is (maybe) trade safe.
     """
 
+    if D_DEBUG:
+        D_DG[lazy_obj].add_node(pri_node)
+
     logging.debug("Ask for %s", pri_node)
-    with D_LOCK[lazy_obj][pri_node]:
 
-        #~=~=~
-        #Handle the  execution stack
-        #~=~=~
-        caller_name = D_PATH[lazy_obj][-1]
-        D_PATH[lazy_obj].append(pri_node)
+    if getattr(lazy_obj, "%s_uncoherent" % pri_node):
+        raise AttributeError, "Node is incoherent {0}".format(pri_node)
 
-
+    with Stack(lazy_obj,pri_node) as caller_name:
         #~=~=~
         #Handle the mutability
         #~=~=~
 
         if caller_name:
-
             #Set parent
             local_parent = "{0}_parents".format(pri_node)
-            appendattr(lazy_obj, local_parent, caller_name)
-
+            appendattr_lock(lazy_obj, local_parent, caller_name)
+    
             #Set children
             local_child = "{0}_children".format(caller_name)
-            appendattr(lazy_obj, local_child, pri_node)
-
-        if getattr(lazy_obj, "%s_uncoherent" % pri_node):
-            raise AttributeError, "Node is incoherent {0}".format(pri_node)
-
-
+            appendattr_lock(lazy_obj, local_child, pri_node)
+    
+            if D_DEBUG:
+                D_DG[lazy_obj].add_edge(caller_name,pri_node)
+    
         #~=~=~
         #Get and set the value node
         #~=~=~
-
+    
         try:
             value = getattr(lazy_obj, pri_node)
         except AttributeError:
             logging.debug("Provide")
-
+            change_and_plot(lazy_obj,pri_node,'red')
+    
             value = provider(lazy_obj)
-            setattr(lazy_obj, pri_node, value)
+            setattr_lock(lazy_obj, pri_node, value)
+    
+            change_and_plot(lazy_obj,pri_node,'green')
+                
         else:
             logging.debug("Already provided")
-
-
-        #Now we can depile the node in our stack 
-        D_PATH[lazy_obj].pop()
-
+            change_and_plot(lazy_obj,pri_node,'green')
+        
     return value
 
-
-def set_irp_node(lazy_obj, pri_node, value):
-    """
-    'pri_node', is the private value of the node ("_node").
-    'parent' is the node who want to access to this particular node.
-    'value' is the value of the node who want to set.
-
-    First we remove all the private variable of the node who use this 
-        particular node. Then we set the new value
-
-    This function is (maybe) trade safe.  
-    """
-
-    logging.debug("Set node %s", pri_node)
-    with D_LOCK[lazy_obj][pri_node]:
-        setattr(lazy_obj, pri_node, value)
-
-    #Now handle the mutability
-    l_ancestor = irp_ancestor(lazy_obj, pri_node)
-    l_descendant = irp_descendant(lazy_obj, pri_node)
-
-    logging.debug("Unset parents: %s", l_ancestor)
-    for parent in l_ancestor:
-
-        with D_LOCK[lazy_obj][parent]:
-            #Maybe somebody already delete this private node
-            try:
-                delattr(lazy_obj, parent)
-            except AttributeError:
-                pass
-
-    logging.debug("All %s in uncoherent cause of %s", l_descendant, pri_node)
-    for child in l_descendant:
-        with D_LOCK[lazy_obj][child]:
-            appendattr(lazy_obj, "{0}_uncoherent".format(child), pri_node)
-
-    for pic in getattr(lazy_obj, "%s_uncoherent" % pri_node):
-        logging.debug("%s was uncoherent cause of %s", pri_node, pic)
-        logging.debug("So maybe %s is valid now", irp_descendant(lazy_obj, pic))
-
-        for descendant in irp_descendant(lazy_obj, pic) | set([pri_node]):
-            
-            s = getattr(lazy_obj, "%s_uncoherent" % descendant) - set([pic])
-
-            with D_LOCK[lazy_obj][descendant]:
-                setattr(lazy_obj, "{0}_uncoherent".format(descendant), s)
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
 # |_/ (/_ (_ (_) | (_|  |_ (_) |  
@@ -198,7 +235,7 @@ class lazy_property(object):
         self.pri_node = "_{0}".format(self.node)
         self.immutability = immutability
 
-    def set_obj_attr(self, obj):
+    def init_obj_attr(self, obj):
         "Initiate some useful private value"
         "Do this only once"
         if not D_ONLY_ONCE[obj][self.node]:
@@ -216,7 +253,8 @@ class lazy_property(object):
 
     def __get__(self, obj, objtype):
         "Get the value of the node"
-        self.set_obj_attr(obj)
+        self.init_obj_attr(obj)
+
         return get_irp_node(obj, self.pri_node, self.provider)
 
     def __set__(self, obj, value):
@@ -224,16 +262,16 @@ class lazy_property(object):
         But wait, leaves are "gradual typed" variable! Youpi!
         Idea borrowed from the-worst-programming-language-ever (http://bit.ly/13tc6XW)
         """
+        self.init_obj_attr(obj)
 
-        self.set_obj_attr(obj)
+        if self.immutability:
+            if self.leaf:
+                self.leaf = False
+            else:
+                raise AttributeError, "Immutable Node {0}".format(self.pri_node)
 
-        if self.leaf and self.immutability:
-            set_irp_node(obj, self.pri_node, value)
-            self.leaf = False
-        elif self.immutability:
-            raise AttributeError, "Immutable Node {0}".format(self.pri_node)
-        else:
-            set_irp_node(obj, self.pri_node, value)
+        set_node_value(lazy_obj=obj, pri_node=self.pri_node,value=value)
+#        s.set_value(value)
 
 
 def lazy_property_mutable(provider):
