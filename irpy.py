@@ -159,20 +159,16 @@ def set_irp_node(lazy_obj, pri_node, value):
         with D_LOCK[lazy_obj][child]:
             appendattr(lazy_obj, "{0}_uncoherent".format(child), pri_node)
 
-    for parent in getattr(lazy_obj, "%s_uncoherent" % pri_node):
-        logging.debug("%s was uncoherent cause of %s", pri_node, parent)
-        logging.debug("So maybe %s is valid now", irp_descendant(lazy_obj, parent))
+    for pic in getattr(lazy_obj, "%s_uncoherent" % pri_node):
+        logging.debug("%s was uncoherent cause of %s", pri_node, pic)
+        logging.debug("So maybe %s is valid now", irp_descendant(lazy_obj, pic))
 
-        for descendant in irp_descendant(lazy_obj, parent) | set([pri_node]):
+        for descendant in irp_descendant(lazy_obj, pic) | set([pri_node]):
             
-            s = getattr(lazy_obj, "%s_uncoherent" % descendant) - set([parent])
-            setattr(lazy_obj, "{0}_uncoherent".format(descendant), s)
+            s = getattr(lazy_obj, "%s_uncoherent" % descendant) - set([pic])
 
-    for parent in l_ancestor | set([pri_node]):
-        with D_LOCK[lazy_obj][parent]:
-            setattr(lazy_obj, "{0}_uncoherent".format(parent), set())
-
-
+            with D_LOCK[lazy_obj][descendant]:
+                setattr(lazy_obj, "{0}_uncoherent".format(descendant), s)
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
 # |_/ (/_ (_ (_) | (_|  |_ (_) |  
