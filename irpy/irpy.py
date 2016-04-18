@@ -1,6 +1,5 @@
 #!/usr/bin/python
 from collections import defaultdict
-
 from irp_node import set_node_value, get_node
 
 #  _                              

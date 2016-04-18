@@ -4,38 +4,9 @@ from irpy import lazy_property
 from irpy import lazy_property_mutable
 from irpy import lazy_property_leaves
 
-import logging
+from debug import irp_debug
 
-
-def loggin_debug():
-
-    logger = logging.getLogger()
-
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-
-        str_ = '[%(relativeCreated)d ms] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
-        formatter = logging.Formatter(str_)
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-    logger.setLevel(logging.DEBUG)
-
-
-def loggin_info():
-    logger = logging.getLogger()
-
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-
-        str_ = '[%(relativeCreated)d ms] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
-        formatter = logging.Formatter(str_)
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-    logger.setLevel(logging.INFO)
-
-
+@irp_debug
 class NotTrivialFunction(object):
     '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
     where:
@@ -142,26 +113,24 @@ class WeightFactory(object):
         return self.mass*self.g
 
 if __name__ == '__main__':
-    loggin_debug()
 
-    logging.info(NotTrivialFunction.__doc__)
-
-    logging.info('Show the dynamic resolution of node')
+    print NotTrivialFunction.__doc__
+    print 'Test dynamic resolution of node...',
     F = NotTrivialFunction(1, 5, 8, 10, 7)
     assert (F.t == 42)
-    logging.info('Show the lazy evaluation')
+    print " Sucess!"
+
+    print 'Lazy evaluation...',
     assert (F.t == 42)
+    print " Sucess!"
 
-    logging.info('Show the coherence and mutability')
-
-    loggin_info()
-    logging.info(NewtonRaphson.__doc__)
+    print NewtonRaphson.__doc__
     F = NewtonRaphson(x=1)
-
     F.solve()
     assert (abs(F.x - 0.739085133) < 1.e-9)
-    logging.info("Success! x={0:.9f}".format(F.x))
+    print "Success! x={0:.9f}".format(F.x)
 
+    print WeightFactory.__doc__
     f = WeightFactory(1,1,1)
     assert ( abs(f.weight - 76970.961) < 1.e-9)
 

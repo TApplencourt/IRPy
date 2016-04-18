@@ -1,6 +1,7 @@
 import logging
 from __init__ import appendattr_lock, setattr_lock, delattr_lock, Stack
 
+from debug import zmq_send_edge, zmq_send_node_info
 # ___                                                  
 #  |     _  _. ._ / _|_    _   _ _|_   ._   _   _|  _  
 # _|_   (_ (_| | |   |_   (_| (/_ |_   | | (_) (_| (/_ 
@@ -30,7 +31,8 @@ def  set_node_value(lazy_obj, pri_node, value):
         logging.debug("Unset parents: %s", l_ancestor)
         for parent in l_ancestor:
             delattr_lock(lazy_obj,parent)
-    
+            zmq_send_node_info(lazy_obj,parent,mode=1)
+
     def irp_set_uncoherent_ancestor():
         #Now handle the mutability
         l_descendant = irp_sap(pri_node, "children") - set([pri_node])
@@ -77,7 +79,6 @@ def get_node(lazy_obj, pri_node, provider):
     This function is (maybe) trade safe.
     """
     logging.debug("Ask for %s", pri_node)
-
     if getattr(lazy_obj, "%s_uncoherent" % pri_node):
         raise AttributeError, "Node is incoherent {0}".format(pri_node)
 
@@ -94,7 +95,11 @@ def get_node(lazy_obj, pri_node, provider):
             #Set children
             local_child = "{0}_children".format(caller_name)
             appendattr_lock(lazy_obj, local_child, pri_node)
-    
+
+            #Send
+            zmq_send_edge(obj=lazy_obj,
+                          u=caller_name,
+                          v=pri_node)    
         #~=~=~
         #Get and set the value node
         #~=~=~
@@ -104,10 +109,13 @@ def get_node(lazy_obj, pri_node, provider):
         except AttributeError:
             logging.debug("Provide")
 
+            zmq_send_node_info(lazy_obj,pri_node,mode=1)
             value = provider(lazy_obj)
+            zmq_send_node_info(lazy_obj,pri_node,mode=2)
             setattr_lock(lazy_obj, pri_node, value)
    
         else:
+            zmq_send_node_info(lazy_obj,pri_node,mode=2)
             logging.debug("Already provided")
         
     return value
