@@ -82,7 +82,7 @@ class TestTrivial(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.f.c = 2
 
-class TestBigTree(unittest.TestCase):
+class  TestBigTree(unittest.TestCase):
 
     def setUp(self):
         self.f = BigTree()

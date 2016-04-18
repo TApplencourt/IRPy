@@ -4,12 +4,8 @@ import logging
 from collections import defaultdict
 from threading import Lock
 
-#Handle the instance variable
-D_ONLY_ONCE = defaultdict(lambda: defaultdict(lambda: False))
 #Handle your lock stack
 D_LOCK = defaultdict(lambda: defaultdict(lambda: Lock()))
-
-
 
 D_DEBUG = False
 
@@ -221,25 +217,32 @@ class lazy_property(object):
     Immutability: If immutability is set you cannot set the node
     """
 
-    def __init__(self, provider, node=None, immutability=True):
+    #Handle the instance variable.
+    #We need a global dict, cause property are created when the class is imported
+    #not when it is execuded
+
+    d_only_once = defaultdict(lambda: defaultdict(lambda: False))
+
+    def __init__(self, provider, leaf_node=None, immutability=True):
 
         self.provider = provider
 
-        if not node:
+        if not leaf_node:
             self.node = provider.__name__
             self.leaf = False
         else:
-            self.node = node
+            self.node = leaf_node
             self.leaf = True
 
         self.pri_node = "_{0}".format(self.node)
+
         self.immutability = immutability
 
     def init_obj_attr(self, obj):
-        "Initiate some useful private value"
-        "Do this only once"
-        if not D_ONLY_ONCE[obj][self.node]:
+        """Initiate some useful private value
+           Do this only once"""
 
+        if not lazy_property.d_only_once[obj][self.node]:
             d = {
                 "_{0}_children": set(),
                 "_{0}_parents": set(),
@@ -249,7 +252,7 @@ class lazy_property(object):
             for attr, value in d.items():
                 setattr(obj, attr.format(self.node), value)
 
-            D_ONLY_ONCE[obj][self.node] = True
+            lazy_property.d_only_once[obj][self.node] = True
 
     def __get__(self, obj, objtype):
         "Get the value of the node"
@@ -271,8 +274,6 @@ class lazy_property(object):
                 raise AttributeError, "Immutable Node {0}".format(self.pri_node)
 
         set_node_value(lazy_obj=obj, pri_node=self.pri_node,value=value)
-#        s.set_value(value)
-
 
 def lazy_property_mutable(provider):
     """
@@ -293,7 +294,7 @@ def lazy_property_leaves(mutables=[], immutables=[]):
                     return getattr(self, "_%s" % node)
 
                 p = lazy_property(provider=provider,
-                                  node=node,
+                                  leaf_node=node,
                                   immutability=node in immutables)
                 #If this ugly? Yeah... Is this an issue? I don't really know
                 setattr(self.__class__, node, p)
