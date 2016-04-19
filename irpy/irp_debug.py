@@ -42,18 +42,24 @@ def logging_debug(obj,msg, *args, **kwargs):
 from __init__ import singleton
 @singleton
 class irp_zmq(object):
-    import zmq
+
+    def __init__(self):
+
+        import zmq
+        irp_context = zmq.Context()
+        self.socket =  irp_context.socket(zmq.REQ)
     
-    irp_context = zmq.Context()
-    socket =  irp_context.socket(zmq.REQ)
+        adr_template= "tcp://*"
+        port = self.socket.bind_to_random_port(adr_template,
+                                               min_port=6001,max_port=7001,max_tries=100)
+    
+        adr = "{0}:{1}".format(adr_template,port)
+        print "Debug of IRP process (%s)"%adr
 
-    port = 5556
-    adr = "tcp://*:%s" % port
-    print "Debug of IRP process (%s)"%adr
-    socket.bind(adr)
 
+        
 
-def irp_debug(cls):
+def debug(cls):
     name = cls.__name__
     logger = set_loggin_level(name=name,
                               level="DEBUG")

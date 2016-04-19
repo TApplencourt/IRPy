@@ -1,7 +1,7 @@
 import logging
 from __init__ import appendattr_lock, setattr_lock, delattr_lock, Stack
 
-from debug import zmq_send_edge, zmq_send_node_info, logging_debug
+from irp_debug import zmq_send_edge, zmq_send_node_info, logging_debug
 # ___                                                  
 #  |     _  _. ._ / _|_    _   _ _|_   ._   _   _|  _  
 # _|_   (_ (_| | |   |_   (_| (/_ |_   | | (_) (_| (/_ 

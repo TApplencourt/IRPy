@@ -4,9 +4,8 @@ from irpy import lazy_property
 from irpy import lazy_property_mutable
 from irpy import lazy_property_leaves
 
-from debug import irp_debug
+from irp_debug import debug
 
-@irp_debug
 class NotTrivialFunction(object):
     '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
     where:
@@ -77,6 +76,7 @@ class NewtonRaphson(object):
             self.x = self.x_next
 
 
+@debug
 class WeightFactory(object):
     '''Dimension of the box (m)'''
 
