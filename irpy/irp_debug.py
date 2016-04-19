@@ -5,9 +5,11 @@
 #         
 
 
-D_LOGGER=dict()
-
+from collections import defaultdict
 import logging
+
+D_LOGGER = defaultdict(lambda: logging.getLogger())
+
 def set_loggin_level(name, level):
 
     logger = logging.getLogger(name)
@@ -15,7 +17,7 @@ def set_loggin_level(name, level):
     if not logger.handlers:
         handler = logging.StreamHandler()
 
-        str_ = '[%(relativeCreated)d ms] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
+        str_ = '[%(relativeCreated)d ms] %(levelname)s - %(message)s'
         formatter = logging.Formatter(str_)
         handler.setFormatter(formatter)
         logger.addHandler(handler)
@@ -27,12 +29,8 @@ def set_loggin_level(name, level):
 
     return logger
 
-def logging_debug(obj,msg, *args, **kwargs):
-    name = obj.__class__.__name__
-    try:
-        D_LOGGER[name].debug(msg,*args,**kwargs)
-    except:
-        pass
+def irp_logger(obj):
+    return D_LOGGER[obj.__class__.__name__]
 
 # __                 _  
 #  /  _  ._ _  |\/| / \ 

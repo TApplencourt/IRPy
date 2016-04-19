@@ -1,14 +1,18 @@
 import logging
 from __init__ import appendattr_lock, setattr_lock, delattr_lock, Stack
 
-from irp_debug import zmq_send_edge, zmq_send_node_info, logging_debug
+from irp_debug import zmq_send_edge, zmq_send_node_info, irp_logger
 # ___                                                  
 #  |     _  _. ._ / _|_    _   _ _|_   ._   _   _|  _  
 # _|_   (_ (_| | |   |_   (_| (/_ |_   | | (_) (_| (/_ 
 #                          _|
 #Satisfaction
-def  set_node_value(lazy_obj, pri_node, value):
+def set_node_value(lazy_obj, pri_node, value):
 
+    logger = irp_logger(lazy_obj)
+    logger.debug("Set node %s", pri_node)
+    setattr_lock(lazy_obj, pri_node, value)
+    
     def irp_sap(pri_node, direction, visited=None):
         """
         Direction is $parents or $children, recurse accordingly
@@ -27,8 +31,8 @@ def  set_node_value(lazy_obj, pri_node, value):
     
     def irp_remove_ancestor_cache():
         l_ancestor = irp_sap(pri_node, "parents",) - set([pri_node])
-    
-        logging_debug(lazy_obj,"Unset parents: %s", l_ancestor)
+        
+        logger.debug("Unset parents: %s", l_ancestor)
         for parent in l_ancestor:
             delattr_lock(lazy_obj,parent)
             zmq_send_node_info(lazy_obj,parent,mode=1)
@@ -37,7 +41,7 @@ def  set_node_value(lazy_obj, pri_node, value):
         #Now handle the mutability
         l_descendant = irp_sap(pri_node, "children") - set([pri_node])
     
-        logging_debug(lazy_obj,"All %s in uncoherent cause of %s", l_descendant, pri_node)
+        logger.debug("All %s in uncoherent cause of %s", l_descendant, pri_node)
         for child in l_descendant:
             appendattr_lock(lazy_obj, "{0}_uncoherent".format(child), pri_node)
     
@@ -49,16 +53,15 @@ def  set_node_value(lazy_obj, pri_node, value):
     
             l_descendant = irp_sap(sibling, "children")  - visited
     
-            logging_debug(lazy_obj,"%s was uncoherent cause of %s", pri_node, sibling)
-            logging_debug(lazy_obj,"So maybe %s is valid now", l_descendant)
+            logger.debug("%s was uncoherent cause of %s", pri_node, sibling)
+            logger.debug("So maybe %s is valid now", l_descendant)
     
             for descendant in l_descendant:
                 s = getattr(lazy_obj, "%s_uncoherent" % descendant) - set([sibling])
                 setattr_lock(lazy_obj, "{0}_uncoherent".format(descendant), s)
                 visited.add(descendant)
-    
-    logging_debug(lazy_obj,"Set node %s", pri_node)
-    setattr_lock(lazy_obj, pri_node, value)
+
+
     irp_remove_ancestor_cache()
     irp_set_uncoherent_ancestor()
     irp_unset_siblings()
@@ -78,7 +81,9 @@ def get_node(lazy_obj, pri_node, provider):
         Finally, we return the value of the node.
     This function is (maybe) trade safe.
     """
-    logging_debug(lazy_obj,"Ask for %s", pri_node)
+    logger = irp_logger(lazy_obj)
+
+    logger.debug("Ask for %s", pri_node)
     if getattr(lazy_obj, "%s_uncoherent" % pri_node):
         raise AttributeError, "Node is incoherent {0}".format(pri_node)
 
@@ -107,7 +112,7 @@ def get_node(lazy_obj, pri_node, provider):
         try:
             value = getattr(lazy_obj, pri_node)
         except AttributeError:
-            logging_debug(lazy_obj,"Provide")
+            logger.debug("Provide")
 
             zmq_send_node_info(lazy_obj,pri_node,mode=1)
             value = provider(lazy_obj)
@@ -116,6 +121,6 @@ def get_node(lazy_obj, pri_node, provider):
    
         else:
             zmq_send_node_info(lazy_obj,pri_node,mode=2)
-            logging_debug(lazy_obj,"Already provided")
+            logger.debug("Already provided")
         
     return value
