@@ -1,6 +1,6 @@
 package:
   name: irpy
-  version: 0.4
+  version: 0.4.2
 
 requirements:
   build:
