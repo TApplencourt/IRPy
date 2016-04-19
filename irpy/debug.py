@@ -3,24 +3,14 @@
 # |_ (_) (_| (_| | | | (_| 
 #         _|  _|        _| 
 #         
+
+
+D_LOGGER=dict()
+
 import logging
-def loggin_debug(name=None):
+def set_loggin_level(name, level):
 
-    logger = logging.getLogger()
-
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-
-        str_ = '[%(relativeCreated)d ms] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
-        formatter = logging.Formatter(str_)
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-    logger.setLevel(logging.DEBUG)
-
-
-def loggin_info():
-    logger = logging.getLogger()
+    logger = logging.getLogger(name)
 
     if not logger.handlers:
         handler = logging.StreamHandler()
@@ -30,7 +20,19 @@ def loggin_info():
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-    logger.setLevel(logging.INFO)
+    if level == "DEBUG":
+        logger.setLevel(logging.DEBUG)
+    elif level == "INFO":
+        logger.setLevel(logging.INFO)
+
+    return logger
+
+def logging_debug(obj,msg, *args, **kwargs):
+    name = obj.__class__.__name__
+    try:
+        D_LOGGER[name].debug(msg,*args,**kwargs)
+    except:
+        pass
 
 # __                 _  
 #  /  _  ._ _  |\/| / \ 
@@ -52,8 +54,13 @@ class irp_zmq(object):
 
 
 def irp_debug(cls):
+    name = cls.__name__
+    logger = set_loggin_level(name=name,
+                              level="DEBUG")
+    D_LOGGER[name]=logger
+
     setattr(cls,"irp_debug",True)
-    loggin_debug(name=cls.__name__)
+
     return cls
 
 def zmq_send_edge(obj,u,v):
