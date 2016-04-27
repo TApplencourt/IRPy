@@ -9,7 +9,7 @@ else:
     USE_CYTHON = True
 
 ext = '.pyx' if USE_CYTHON else '.c'
-extensions = [Extension("example", ["example"+ext])]
+extensions = [Extension("irpy", ["irpy"+ext])]
 
 if USE_CYTHON:
     extensions = cythonize(extensions)
