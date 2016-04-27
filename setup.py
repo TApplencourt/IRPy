@@ -2,8 +2,8 @@ from setuptools import setup
 from Cython.Build import cythonize
 
 setup(
-	name="irpy",
-	version="0.5.0",
+    name="irpy",
+    version="0.5.0",
     ext_modules = cythonize("irpy.pyx"),
     description = 'IRP for Python',
     long_description='Look a github README please.',
