@@ -1,5 +1,7 @@
 language: python
 python:
- - "2.7"
-
-script: .irpy/run_test.py
+  - "2.7"
+install:
+  - ./build.sh
+script: 
+  - ./run_test.py

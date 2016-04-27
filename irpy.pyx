@@ -2,15 +2,21 @@
 from collections import defaultdict
 
 #Handle your execution stack
-d_path = [None]
+#Handle the instance variable.
+#We need a global dict, cause property are created when the class is imported
+#not when it is execuded
+d_path = defaultdict(lambda: [None])
+d_last_caller = defaultdict(lambda: None)
 
-def appendattr(object, name, value):
+
+def appendattr(obj, name, value):
     try:
-        s = getattr(object, name)
+        s = getattr(obj, name)
     except AttributeError:
-        setattr(object, name, set([value]))
+        setattr(obj, name, set([value]))
     else:
-        setattr(object, name, set([value]) | s)
+        setattr(obj, name, set([value]) | s)
+
 
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
@@ -23,59 +29,55 @@ class lazy_property(object):
     My little Property...  friend
     """
 
-    #Handle the instance variable.
-    #We need a global dict, cause property are created when the class is imported
-    #not when it is execuded
-
-    def __init__(self, provider, immutability=True):
+    def __init__(self, provider, leaf_node=None, immutability=True):
         """Provider: If a function who will be used to compute the node
            leaf_node: If the name of the node
            immutability: If immutability is set you cannot set the node"""
 
         self.provider = provider
+        self.leaf_node = leaf_node
 
-        self.node = provider.__name__
+        if not self.leaf_node:
+            self.node = provider.__name__
+        else:
+            self.node = self.leaf_node
 
         self.pri_node = "_{0}".format(self.node)
         self.parents = "_{0}_parents".format(self.node)
         self.children = "_{0}_children".format(self.node)
         self.uncoherent = "_{0}_uncoherent".format(self.node)
 
-
         self.immutability = immutability
-
-        self.last_caller = None
 
     def __get__(self, obj, objtype):
         "Get the value of the node"
-        caller_name = d_path[-1]
-
+        caller = d_path[obj][-1]
         pri_node = self.pri_node
 
         "Handle The Genealogy"
-        if caller_name != self.last_caller:
-            appendattr(obj,self.parents,caller_name)
-            appendattr(obj,"{0}_children".format(caller_name),pri_node)
-            self.last_caller = caller_name
- 
+        if caller != d_last_caller[obj]:
+            appendattr(obj, self.parents, caller)
+            appendattr(obj, "{0}_children".format(caller), pri_node)
+            d_last_caller[obj] = caller
+
         "Get the value"
         try:
             value = getattr(obj, pri_node)
         except AttributeError:
-            
+
             try:
-                getattr(obj,self.uncoherent)
-            except AttributeError:   
+                getattr(obj, self.uncoherent)
+            except AttributeError:
                 pass
             else:
                 raise AttributeError, "Node is incoherent {0}".format(pri_node)
 
-            d_path.append(pri_node)
+            d_path[obj].append(pri_node)
 
             value = self.provider(obj)
             setattr(obj, pri_node, value)
 
-            d_path.pop()
+            d_path[obj].pop()
 
         return value
 
@@ -84,24 +86,51 @@ class lazy_property(object):
         But wait, leaves are "gradual typed" variable! Youpi!
         Idea borrowed from the-worst-programming-language-ever (http://bit.ly/13tc6XW)
         """
+
         if self.immutability:
-            raise AttributeError, "Immutable Node {0}".format(self.pri_node)
-        else:
-            set_node_value(lazy_obj=obj, pri_node=self.pri_node, value=value)
+            if self.leaf_node:
+                self.leaf_node = False
+            else:
+                raise AttributeError, "Immutable Node {0}".format(self.pri_node)
+
+        set_node_value(obj=obj, pri_node=self.pri_node, value=value)
+
 
 def lazy_property_mutable(provider):
     "Return a lazy_property mutable"
     return lazy_property(provider=provider, immutability=False)
+
+
+def lazy_property_leaves(mutables=[], immutables=[]):
+    "Set to properties for the __init__ method"
+
+    def leaf_decorator(func):
+        def func_wrapper(self, *args, **kwargs):
+
+            for node in set(immutables) | set(mutables):
+
+                def provider(self):
+                    return getattr(self, "_%s" % node)
+
+                p = lazy_property(provider=provider,
+                                  leaf_node=node,
+                                  immutability=node in immutables)
+                #If this ugly? Yeah... Is this an issue? I don't really know
+                setattr(self.__class__, node, p)
+
+            return func(self, *args, **kwargs)
+
+        return func_wrapper
+
+    return leaf_decorator
+
 
 # ___                                                  
 #  |     _  _. ._ / _|_    _   _ _|_   ._   _   _|  _  
 # _|_   (_ (_| | |   |_   (_| (/_ |_   | | (_) (_| (/_ 
 #                          _|
 #Satisfaction
-def set_node_value(lazy_obj, pri_node, value):
-
-    setattr(lazy_obj, pri_node, value)
-    
+def set_node_value(obj, pri_node, value):
     def irp_sap(pri_node, direction, visited=None):
         """
         Direction is $parents or $children, recurse accordingly
@@ -111,7 +140,7 @@ def set_node_value(lazy_obj, pri_node, value):
 
         visited.add(pri_node)
         try:
-            s = getattr(lazy_obj, "{0}_{1}".format(pri_node, direction))
+            s = getattr(obj, "{0}_{1}".format(pri_node, direction))
         except AttributeError:
             s = set()
 
@@ -119,54 +148,59 @@ def set_node_value(lazy_obj, pri_node, value):
             irp_sap(next_, direction, visited)
 
         return visited - set([None])
-    
+
     def irp_remove_ancestor_cache():
         l_ancestor = irp_sap(pri_node, "parents") - set([pri_node])
-        
+
         for parent in l_ancestor:
             try:
-                delattr(lazy_obj,parent)
+                delattr(obj, parent)
             except AttributeError:
                 pass
 
     def irp_set_uncoherent_descendant():
         #Now handle the mutability
         l_descendant = irp_sap(pri_node, "children") - set([pri_node])
-        
+
         for child in l_descendant:
-            appendattr(lazy_obj, "{0}_uncoherent".format(child), pri_node)
+            appendattr(obj, "{0}_uncoherent".format(child), pri_node)
             try:
-                delattr(lazy_obj,child)
+                delattr(obj, child)
             except AttributeError:
                 pass
 
     def irp_unset_siblings():
 
-        str_uncoherent = "{0}_uncoherent"
-
         try:
-            l_uncoherent = getattr(lazy_obj, str_uncoherent.format(pri_node))
+            l_uncoherent = getattr(obj, "{0}_uncoherent".format(pri_node))
         except AttributeError:
             pass
         else:
-
             visited = set()
             for sibling in l_uncoherent:
-                for descendant in irp_sap(sibling, "children")  - visited:
+                for descendant in irp_sap(sibling, "children") - visited:
+
+                    name = "{0}_uncoherent".format(descendant)
 
                     try:
-                        s = getattr(lazy_obj, str_uncoherent.format(descendant)) - set([sibling])
+                        s = getattr(obj, name) - set([sibling])
                     except AttributeError:
                         pass
                     else:
                         if not s:
-                            delattr(lazy_obj,"{0}_uncoherent".format(descendant))
+                            delattr(obj, name)
                         else:
-                            setattr(lazy_obj, "{0}_uncoherent".format(descendant), s)
-        
+                            setattr(obj, name, s)
+
                     visited.add(descendant)
 
-
-    irp_remove_ancestor_cache()
-    irp_set_uncoherent_descendant()
-    irp_unset_siblings()
+    try:
+        cur_value = getattr(obj, pri_node)
+    except AttributeError:
+        cur_value = None
+    finally:
+        if cur_value != value:
+            setattr(obj, pri_node, value)
+            irp_remove_ancestor_cache()
+            irp_set_uncoherent_descendant()
+            irp_unset_siblings()
