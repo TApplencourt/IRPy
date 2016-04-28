@@ -68,17 +68,13 @@ class lazy_property(object):
             try:
                 getattr(obj, self.uncoherent)
             except AttributeError:
-                pass
+                d_path[obj].append(pri_node)
+                value = self.provider(obj)
+                setattr(obj, pri_node, value)
+                d_path[obj].pop()
             else:
                 raise AttributeError, "Node is incoherent {0}".format(pri_node)
-
-            d_path[obj].append(pri_node)
-
-            value = self.provider(obj)
-            setattr(obj, pri_node, value)
-
-            d_path[obj].pop()
-
+                
         return value
 
     def __set__(self, obj, value):
