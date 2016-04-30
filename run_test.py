@@ -75,11 +75,11 @@ class TestBigTree(unittest.TestCase):
 
         import timeit
 
-        h = timeit.timeit('f.b0_hand;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
         i = timeit.timeit('f.b0;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
+        h = timeit.timeit('f.b0_hand;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
 
         try:
-            self.assertLessEqual(i, h*2.25)
+            self.assertTrue(i < h*2.25)
         except AssertionError as e:
             raise e
 
