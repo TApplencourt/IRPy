@@ -1,6 +1,6 @@
 ![](https://zippy.gfycat.com/SarcasticOpenHedgehog.gif)
 
-#[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy) [![TravisCI](https://img.shields.io/travis/TApplencourt/IRPy.svg)]() [![License](https://img.shields.io/pypi/l/irpy.svg)](http://www.wtfpl.net/)
+#[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy) [![TravisCI](https://img.shields.io/travis/TApplencourt/IRPy.svg)](https://travis-ci.org/TApplencourt/IRPy) [![License](https://img.shields.io/pypi/l/irpy.svg)](http://www.wtfpl.net/)
 
 
 IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties (`property` that use `properties` in their declaration and so forth).
