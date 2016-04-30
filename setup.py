@@ -1,5 +1,4 @@
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup, Extension
 
 try:
     from Cython.Build import cythonize
@@ -25,4 +24,5 @@ setup(
     license='WTFPL',
     author='Thomas Applencourt',
     author_email='thomas.applencourt@irsamc.ups-tlse.fr',
+    use_2to3=True,
 )
