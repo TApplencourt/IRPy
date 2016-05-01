@@ -5,15 +5,6 @@ from collections import defaultdict
 d_path = defaultdict(lambda: [None])
 d_last_caller = defaultdict(lambda: None)
 
-
-def appendattr(obj, name, value):
-    try:
-        s = obj.__dict__[name]
-    except AttributeError:
-        obj.__dict__[name] = set([value])
-    else:
-        obj.__dict__[name] |= set([value])
-
 def genealogy(obj, _node, direction, inclusif=False):
     """Return the genealogy of a _node.
        Direction is $parents or $children, recurse accordingly"""
@@ -24,8 +15,8 @@ def genealogy(obj, _node, direction, inclusif=False):
 
         visited.add(_node)
         try:
-            s = obj.__dict__["%s_%s" % (_node, direction)]
-        except KeyError:
+            s = getattr(obj, "{0}_{1}".format(_node, direction))
+        except AttributeError:
             s = set()
 
         for next_ in s - visited:
@@ -38,6 +29,15 @@ def genealogy(obj, _node, direction, inclusif=False):
         s = s - set([_node])
 
     return s
+
+def appendattr(obj, name, value):
+    try:
+        s = getattr(obj, name)
+    except AttributeError:
+        setattr(obj, name, set([value]))
+    else:
+        setattr(obj, name, set([value]) | s)
+
 
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
@@ -80,22 +80,21 @@ class lazy_property(object):
             d_last_caller[obj] = _caller
 
         #Get the value
-        d_attr =  obj.__dict__
         try:
-            value =  d_attr[_node]
-        except KeyError:
+            value = getattr(obj, _node)
+        except AttributeError:
 
-            if self.uncoherent in d_attr:
-                raise AttributeError, "Node is incoherent {0}".format(_node)
-            else:
+            try:
+                getattr(obj, self.uncoherent)
+            except AttributeError:
                 d_path[obj].append(_node)
 
                 value = self.provider(obj)
-                d_attr[_node] = value
+                setattr(obj, _node, value)
 
                 d_path[obj].pop()
             else:
-
+                raise AttributeError, "Node is incoherent {0}".format(_node)
                 
         return value
 
@@ -108,46 +107,42 @@ class lazy_property(object):
         _node = self._node
 
         if self.immutable:
-            if not self.leaf_node:
-                raise AttributeError, "Immutable Node {0}".format(_node)
-            else:
+            if self.leaf_node:
                 self.leaf_node = False
-               
+            else:
+                raise AttributeError, "Immutable Node {0}".format(_node)
 
-        d_attr =  obj.__dict__
-        
         try:
-            cur_value = d_attr[_node]
-        except KeyError:
+            cur_value = getattr(obj, _node)
+        except AttributeError:
             cur_value = None
         finally:
             if cur_value != value:
-
-                d_attr[_node] = value
+                setattr(obj, _node, value)
 
                 #remove_ancestor_cache
                 for _parent in genealogy(obj, _node, "parents"):
-                    if _parent in d_attr:  del d_attr[_parent]
+                    if hasattr(obj, _parent): delattr(obj, _parent)
 
                 #Descendant are now uncoherent, cause of the get optimisation, we need to remove there cache.
                 for _child in genealogy(obj, _node, "children"):
                     appendattr(obj, "{0}_uncoherent".format(child), _node)
-                    if _child in d_attr:  del d_attr[_child]
+                    if hasattr(obj, _child): delattr(obj, _child)
 
                 #If this node was uncoherent before, we need to do some genealogy to uncoherents is sibling.
-                if "%s_uncoherent" % (_node) in d_attr:
+                if hasattr(obj,  "%s_uncoherent" % (_node)):
 
                     visited = set()
-                    for sibling in  d_attr["%s_uncoherent" % (_node)]:
+                    for sibling in getattr(obj, "%s_uncoherent" % (_node)):
                         for _child in genealogy(sibling, "children",inclusif=True) - visited:
 
                             _uncoherent_child = "%s_uncoherent" % (_child)
-                            if _uncoherent_child in d_attr:
-                                s = d[_uncoherent_child] - set([sibling])
+                            if hasattr(obj, _uncoherent_child):
+                                s = getattr(obj, _uncoherent_child) - set([sibling])
                                 if not s:
-                                    del d[_uncoherent_child]
+                                    delattr(obj, _uncoherent_child)
                                 else:
-                                    d[_uncoherent_child] = s
+                                    setattr(obj, _uncoherent_child, s)
 
                             visited.add(descendant)
 
@@ -164,7 +159,7 @@ def lazy_property_leaves(mutables=(), immutables=()):
             for node in set(immutables) | set(mutables):
 
                 def provider(self):
-                    return self.__dict__["_%s" % (node)]
+                    return getattr(self, "_%s" % (node))
 
                 p = lazy_property(provider=provider,
                                   leaf_node=node,
