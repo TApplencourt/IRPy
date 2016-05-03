@@ -24,11 +24,12 @@ def genealogy(obj, _node, direction, inclusif=False):
 
         return visited - set([None])
 
-    s = sap(_node,direction)
+    s = sap(_node, direction)
     if not inclusif:
         s = s - set([_node])
 
     return s
+
 
 def appendattr(obj, name, value):
     try:
@@ -37,6 +38,24 @@ def appendattr(obj, name, value):
         setattr(obj, name, set([value]))
     else:
         setattr(obj, name, set([value]) | s)
+
+
+def sibling_coherence(obj, _node):
+    """_node have changed, is now coherent. Reflect this fact on is sibling"""
+    visited = set()
+
+    for sibling in getattr(obj, "%s_incoherent" % (_node)):
+        if sibling not in visited:
+            for _child in genealogy(obj, sibling, "children", inclusif=True):
+                _incoherent_child = "%s_incoherent" % (_child)
+                if hasattr(obj, _incoherent_child):
+                    s = getattr(obj, _incoherent_child) - set([sibling])
+                    if not s:
+                        delattr(obj, _incoherent_child)
+                    else:
+                        setattr(obj, _incoherent_child, s)
+
+            visited.add(_child)
 
 
 #  _                              
@@ -63,10 +82,9 @@ class lazy_property(object):
             node = provider.__name__
         else:
             node = self.leaf_node
-        
-        self._node = "_%s" % (node)
-        self.uncoherent = "_%s_uncoherent" % (node)
 
+        self._node = "_%s" % (node)
+        self.incoherent = "_%s_incoherent" % (node)
 
     def __get__(self, obj, objtype):
         "Get the value of the node and handle the genealogy"
@@ -85,7 +103,7 @@ class lazy_property(object):
         except AttributeError:
 
             try:
-                getattr(obj, self.uncoherent)
+                getattr(obj, self.incoherent)
             except AttributeError:
                 d_path[obj].append(_node)
 
@@ -95,7 +113,7 @@ class lazy_property(object):
                 d_path[obj].pop()
             else:
                 raise AttributeError, "Node is incoherent {0}".format(_node)
-                
+
         return value
 
     def __set__(self, obj, value):
@@ -120,35 +138,25 @@ class lazy_property(object):
             if cur_value != value:
                 setattr(obj, _node, value)
 
-                #remove_ancestor_cache
+                #Remove_ancestor_cache
                 for _parent in genealogy(obj, _node, "parents"):
                     if hasattr(obj, _parent): delattr(obj, _parent)
 
-                #Descendant are now uncoherent, cause of the get optimisation, we need to remove there cache.
+                #Descendant are now incoherent;
+                #cause of the get optimization, we need to remove there cache.
                 for _child in genealogy(obj, _node, "children"):
-                    appendattr(obj, "{0}_uncoherent".format(child), _node)
+                    appendattr(obj, "%s_incoherent" % (_child), _node)
                     if hasattr(obj, _child): delattr(obj, _child)
 
-                #If this node was uncoherent before, we need to do some genealogy to uncoherents is sibling.
-                if hasattr(obj,  "%s_uncoherent" % (_node)):
+                #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
+                if hasattr(obj, "%s_incoherent" % (_node)):
+                    sibling_coherence(obj, _node)
 
-                    visited = set()
-                    for sibling in getattr(obj, "%s_uncoherent" % (_node)):
-                        for _child in genealogy(sibling, "children",inclusif=True) - visited:
-
-                            _uncoherent_child = "%s_uncoherent" % (_child)
-                            if hasattr(obj, _uncoherent_child):
-                                s = getattr(obj, _uncoherent_child) - set([sibling])
-                                if not s:
-                                    delattr(obj, _uncoherent_child)
-                                else:
-                                    setattr(obj, _uncoherent_child, s)
-
-                            visited.add(descendant)
 
 def lazy_property_mutable(provider):
     "Return a lazy_property mutable"
     return lazy_property(provider=provider, immutable=False)
+
 
 def lazy_property_leaves(mutables=(), immutables=()):
     "Set to properties for the __init__ method"
