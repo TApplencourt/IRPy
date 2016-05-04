@@ -1,6 +1,6 @@
 ![](https://zippy.gfycat.com/SarcasticOpenHedgehog.gif)
 
-#[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy) [![TravisCI](https://img.shields.io/travis/TApplencourt/IRPy.svg)](https://travis-ci.org/TApplencourt/IRPy) [![License](https://img.shields.io/pypi/l/irpy.svg)](http://www.wtfpl.net/)
+[![PyPi](https://img.shields.io/pypi/v/irpy.svg)](https://pypi.python.org/pypi/irpy) [![TravisCI](https://img.shields.io/travis/TApplencourt/IRPy.svg)](https://travis-ci.org/TApplencourt/IRPy) [![License](https://img.shields.io/pypi/l/irpy.svg)](http://www.wtfpl.net/)
 
 
 IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties (`property` that use `properties` in their declaration and so forth).
@@ -8,7 +8,7 @@ Lazy evaluation of properties are quite common ([Werkzeug](https://werkzeug.poco
 but coherence problems can arise if you have inference rule between mutable properties. The aim of this library is to solve this problem.
 
 
-##Install
+## Install
 - With [pip](https://pip.pypa.io/en/stable/):
 ```
 pip install irpy
@@ -19,7 +19,7 @@ conda install -c https://conda.anaconda.org/tapplencourt irpy
 ```
 - You can download [irpy.pyx](https://raw.githubusercontent.com/TApplencourt/IRPy/master/irpyx.py) rename it into `irpy.py` and add it to `PYTHONPATH`.
 
-##API
+## API
 - `lazy_property`: a simple lazy property;
 - `lazy_property_mutable`: a lazy property that can change. When doing so, all of these ancestors are invalided and will be recomputed when needed. Furthermore, all of these descendants are now unattainable;
 - `lazy_property_leaf(mutable,immutable)`: this function allow node creation's from values defined in the `__init__` class method.
@@ -52,7 +52,7 @@ class WeightFactory(object):
 
     @property
     def volume(self):
-        " V = l1 * l2 * l3"
+        " V = l1 * l2 * l3 (m^3)"
         return self.l1 * self.l2 * self.l3 
 
     @property
@@ -62,7 +62,7 @@ class WeightFactory(object):
 
     @property
     def mass(self):
-        "m = V * d"
+        "m = V * d (kg)"
         return self.volume * self.density
 
     @property
@@ -72,7 +72,7 @@ class WeightFactory(object):
 
     @property
     def weight(self):
-        "In Newton"
+        "(Newton)"
         return self.mass*self.g
 ```
 can be represend as:
@@ -131,4 +131,16 @@ f = WeightFactory(1,1,1)
 assert ( abs(f.weight - 76970.961) < 1.e-4)
 f.g = 1.622
 assert ( abs(f.weight - 12765.14) < 1.e-4)
+```
+### Descendant are removed from the tree
+
+Is we change an node (the `mass` for example), all is descedants are removed from the tree and are, for now, unreacheable.
+
+```python
+f = WeightFactory(1,1,1)
+f.mass = 80
+try:
+    print f.volume
+except AttributeError:
+    print "Node have been removed"
 ```
