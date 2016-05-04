@@ -504,7 +504,7 @@ struct __pyx_obj_4irpy___pyx_scope_struct__genealogy {
 };
 
 
-/* "irpy.pyx":161
+/* "irpy.pyx":162
  * 
  * 
  * def lazy_property_leaves(mutables=(), immutables=()):             # <<<<<<<<<<<<<<
@@ -518,7 +518,7 @@ struct __pyx_obj_4irpy___pyx_scope_struct_1_lazy_property_leaves {
 };
 
 
-/* "irpy.pyx":164
+/* "irpy.pyx":165
  *     "Set to properties for the __init__ method"
  * 
  *     def leaf_decorator(func):             # <<<<<<<<<<<<<<
@@ -532,7 +532,7 @@ struct __pyx_obj_4irpy___pyx_scope_struct_2_leaf_decorator {
 };
 
 
-/* "irpy.pyx":165
+/* "irpy.pyx":166
  * 
  *     def leaf_decorator(func):
  *         def func_wrapper(self, *args, **kwargs):             # <<<<<<<<<<<<<<
@@ -807,6 +807,24 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j
 static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
                                                      int is_list, int wraparound, int boundscheck);
 
+/* StringJoin.proto */
+#if PY_MAJOR_VERSION < 3
+#define __Pyx_PyString_Join __Pyx_PyBytes_Join
+#define __Pyx_PyBaseString_Join(s, v) (PyUnicode_CheckExact(s) ? PyUnicode_Join(s, v) : __Pyx_PyBytes_Join(s, v))
+#else
+#define __Pyx_PyString_Join PyUnicode_Join
+#define __Pyx_PyBaseString_Join PyUnicode_Join
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+    #if PY_MAJOR_VERSION < 3
+    #define __Pyx_PyBytes_Join _PyString_Join
+    #else
+    #define __Pyx_PyBytes_Join _PyBytes_Join
+    #endif
+#else
+static CYTHON_INLINE PyObject* __Pyx_PyBytes_Join(PyObject* sep, PyObject* values);
+#endif
+
 /* PyErrFetchRestore.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
 #define __Pyx_ErrRestoreWithState(type, value, tb)  __Pyx_ErrRestoreInState(PyThreadState_GET(), type, value, tb)
@@ -963,11 +981,14 @@ int __pyx_module_is_main_irpy = 0;
 /* Implementation of 'irpy' */
 static PyObject *__pyx_builtin_object;
 static PyObject *__pyx_builtin_AttributeError;
+static const char __pyx_k_i[] = "i";
 static const char __pyx_k_p[] = "p";
 static const char __pyx_k_s[] = "s";
+static const char __pyx_k__4[] = " ";
 static const char __pyx_k_add[] = "add";
 static const char __pyx_k_doc[] = "__doc__";
 static const char __pyx_k_get[] = "__get__";
+static const char __pyx_k_msg[] = "msg";
 static const char __pyx_k_obj[] = "obj";
 static const char __pyx_k_pop[] = "pop";
 static const char __pyx_k_s_2[] = "_%s";
@@ -977,6 +998,7 @@ static const char __pyx_k_args[] = "args";
 static const char __pyx_k_func[] = "func";
 static const char __pyx_k_init[] = "__init__";
 static const char __pyx_k_irpy[] = "irpy";
+static const char __pyx_k_join[] = "join";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "name";
 static const char __pyx_k_next[] = "next_";
@@ -1034,13 +1056,13 @@ static const char __pyx_k_incoherent_child[] = "_incoherent_child";
 static const char __pyx_k_sibling_coherence[] = "sibling_coherence";
 static const char __pyx_k_lazy_property___get[] = "lazy_property.__get__";
 static const char __pyx_k_lazy_property___set[] = "lazy_property.__set__";
-static const char __pyx_k_Node_is_incoherent_0[] = "Node is incoherent {0}";
 static const char __pyx_k_genealogy_locals_sap[] = "genealogy.<locals>.sap";
 static const char __pyx_k_lazy_property___init[] = "lazy_property.__init__";
 static const char __pyx_k_lazy_property_leaves[] = "lazy_property_leaves";
 static const char __pyx_k_lazy_property_mutable[] = "lazy_property_mutable";
 static const char __pyx_k_My_little_Property_My_little_Pr[] = "\n    My little Property\n    My little Property\n    My little Property...  friend\n    ";
 static const char __pyx_k_home_razoa_Project_p16_2_IRPy_l[] = "/home/razoa/Project/p16-2/IRPy_lite/irpy.pyx";
+static const char __pyx_k_Node_0_have_been_removed_from_th[] = "Node {0} have been removed from the tree by {1}";
 static const char __pyx_k_lazy_property_leaves_locals_leaf[] = "lazy_property_leaves.<locals>.leaf_decorator.<locals>.func_wrapper.<locals>.provider";
 static const char __pyx_k_lazy_property_leaves_locals_leaf_2[] = "lazy_property_leaves.<locals>.leaf_decorator.<locals>.func_wrapper";
 static const char __pyx_k_lazy_property_leaves_locals_leaf_3[] = "lazy_property_leaves.<locals>.leaf_decorator";
@@ -1048,7 +1070,8 @@ static PyObject *__pyx_kp_s_0___1;
 static PyObject *__pyx_n_s_AttributeError;
 static PyObject *__pyx_kp_s_Immutable_Node_0;
 static PyObject *__pyx_kp_s_My_little_Property_My_little_Pr;
-static PyObject *__pyx_kp_s_Node_is_incoherent_0;
+static PyObject *__pyx_kp_s_Node_0_have_been_removed_from_th;
+static PyObject *__pyx_kp_s__4;
 static PyObject *__pyx_n_s_add;
 static PyObject *__pyx_n_s_append;
 static PyObject *__pyx_n_s_appendattr;
@@ -1071,6 +1094,7 @@ static PyObject *__pyx_n_s_genealogy;
 static PyObject *__pyx_n_s_genealogy_locals_sap;
 static PyObject *__pyx_n_s_get;
 static PyObject *__pyx_kp_s_home_razoa_Project_p16_2_IRPy_l;
+static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_immutable;
 static PyObject *__pyx_n_s_immutables;
 static PyObject *__pyx_n_s_import;
@@ -1079,6 +1103,7 @@ static PyObject *__pyx_n_s_incoherent;
 static PyObject *__pyx_n_s_incoherent_child;
 static PyObject *__pyx_n_s_init;
 static PyObject *__pyx_n_s_irpy;
+static PyObject *__pyx_n_s_join;
 static PyObject *__pyx_n_s_kwargs;
 static PyObject *__pyx_n_s_lambda;
 static PyObject *__pyx_n_s_lazy_property;
@@ -1095,6 +1120,7 @@ static PyObject *__pyx_n_s_leaf_node;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_metaclass;
 static PyObject *__pyx_n_s_module;
+static PyObject *__pyx_n_s_msg;
 static PyObject *__pyx_n_s_mutables;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_name_2;
@@ -1146,30 +1172,30 @@ static PyObject *__pyx_tp_new_4irpy___pyx_scope_struct_3_func_wrapper(PyTypeObje
 static __Pyx_CachedCFunction __pyx_umethod_PyList_Type_pop = {0, &__pyx_n_s_pop, 0, 0, 0};
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__3;
-static PyObject *__pyx_tuple__4;
-static PyObject *__pyx_tuple__6;
-static PyObject *__pyx_tuple__8;
-static PyObject *__pyx_tuple__10;
-static PyObject *__pyx_tuple__12;
-static PyObject *__pyx_tuple__14;
-static PyObject *__pyx_tuple__16;
-static PyObject *__pyx_tuple__18;
+static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_tuple__7;
+static PyObject *__pyx_tuple__9;
+static PyObject *__pyx_tuple__11;
+static PyObject *__pyx_tuple__13;
+static PyObject *__pyx_tuple__15;
+static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__19;
-static PyObject *__pyx_tuple__21;
-static PyObject *__pyx_tuple__23;
-static PyObject *__pyx_tuple__25;
+static PyObject *__pyx_tuple__20;
+static PyObject *__pyx_tuple__22;
+static PyObject *__pyx_tuple__24;
+static PyObject *__pyx_tuple__26;
 static PyObject *__pyx_codeobj__2;
-static PyObject *__pyx_codeobj__5;
-static PyObject *__pyx_codeobj__7;
-static PyObject *__pyx_codeobj__9;
-static PyObject *__pyx_codeobj__11;
-static PyObject *__pyx_codeobj__13;
-static PyObject *__pyx_codeobj__15;
-static PyObject *__pyx_codeobj__17;
-static PyObject *__pyx_codeobj__20;
-static PyObject *__pyx_codeobj__22;
-static PyObject *__pyx_codeobj__24;
-static PyObject *__pyx_codeobj__26;
+static PyObject *__pyx_codeobj__6;
+static PyObject *__pyx_codeobj__8;
+static PyObject *__pyx_codeobj__10;
+static PyObject *__pyx_codeobj__12;
+static PyObject *__pyx_codeobj__14;
+static PyObject *__pyx_codeobj__16;
+static PyObject *__pyx_codeobj__18;
+static PyObject *__pyx_codeobj__21;
+static PyObject *__pyx_codeobj__23;
+static PyObject *__pyx_codeobj__25;
+static PyObject *__pyx_codeobj__27;
 
 /* "irpy.pyx":5
  * 
@@ -2847,6 +2873,8 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
   PyObject *__pyx_v__caller = NULL;
   PyObject *__pyx_v__node = NULL;
   PyObject *__pyx_v_value = NULL;
+  PyObject *__pyx_v_i = NULL;
+  PyObject *__pyx_v_msg = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3093,7 +3121,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
  *         except AttributeError:
  * 
  *             try:             # <<<<<<<<<<<<<<
- *                 getattr(obj, self.incoherent)
+ *                 i = getattr(obj, self.incoherent)
  *             except AttributeError:
  */
       {
@@ -3108,7 +3136,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
           /* "irpy.pyx":106
  * 
  *             try:
- *                 getattr(obj, self.incoherent)             # <<<<<<<<<<<<<<
+ *                 i = getattr(obj, self.incoherent)             # <<<<<<<<<<<<<<
  *             except AttributeError:
  *                 d_path[obj].append(_node)
  */
@@ -3117,13 +3145,14 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
           __pyx_t_4 = __Pyx_GetAttr(__pyx_v_obj, __pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 106, __pyx_L14_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __pyx_v_i = __pyx_t_4;
+          __pyx_t_4 = 0;
 
           /* "irpy.pyx":105
  *         except AttributeError:
  * 
  *             try:             # <<<<<<<<<<<<<<
- *                 getattr(obj, self.incoherent)
+ *                 i = getattr(obj, self.incoherent)
  *             except AttributeError:
  */
         }
@@ -3131,41 +3160,55 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
         /* "irpy.pyx":115
  *                 d_path[obj].pop()
  *             else:
- *                 raise AttributeError, "Node is incoherent {0}".format(_node)             # <<<<<<<<<<<<<<
+ *                 msg = "Node {0} have been removed from the tree by {1}"             # <<<<<<<<<<<<<<
+ *                 raise AttributeError, msg.format(_node," ".join(i))
+ * 
+ */
+        /*else:*/ {
+          __Pyx_INCREF(__pyx_kp_s_Node_0_have_been_removed_from_th);
+          __pyx_v_msg = __pyx_kp_s_Node_0_have_been_removed_from_th;
+
+          /* "irpy.pyx":116
+ *             else:
+ *                 msg = "Node {0} have been removed from the tree by {1}"
+ *                 raise AttributeError, msg.format(_node," ".join(i))             # <<<<<<<<<<<<<<
  * 
  *         return value
  */
-        /*else:*/ {
-          __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_Node_is_incoherent_0, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 115, __pyx_L16_except_error)
+          __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_msg, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 116, __pyx_L16_except_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_15 = NULL;
+          __pyx_t_15 = __Pyx_PyString_Join(__pyx_kp_s__4, __pyx_v_i); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 116, __pyx_L16_except_error)
+          __Pyx_GOTREF(__pyx_t_15);
+          __pyx_t_16 = NULL;
+          __pyx_t_6 = 0;
           if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_7))) {
-            __pyx_t_15 = PyMethod_GET_SELF(__pyx_t_7);
-            if (likely(__pyx_t_15)) {
+            __pyx_t_16 = PyMethod_GET_SELF(__pyx_t_7);
+            if (likely(__pyx_t_16)) {
               PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-              __Pyx_INCREF(__pyx_t_15);
+              __Pyx_INCREF(__pyx_t_16);
               __Pyx_INCREF(function);
               __Pyx_DECREF_SET(__pyx_t_7, function);
+              __pyx_t_6 = 1;
             }
           }
-          if (!__pyx_t_15) {
-            __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v__node); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 115, __pyx_L16_except_error)
-            __Pyx_GOTREF(__pyx_t_4);
-          } else {
-            __pyx_t_16 = PyTuple_New(1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 115, __pyx_L16_except_error)
-            __Pyx_GOTREF(__pyx_t_16);
-            __Pyx_GIVEREF(__pyx_t_15); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_15); __pyx_t_15 = NULL;
-            __Pyx_INCREF(__pyx_v__node);
-            __Pyx_GIVEREF(__pyx_v__node);
-            PyTuple_SET_ITEM(__pyx_t_16, 0+1, __pyx_v__node);
-            __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_16, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 115, __pyx_L16_except_error)
-            __Pyx_GOTREF(__pyx_t_4);
-            __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+          __pyx_t_17 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 116, __pyx_L16_except_error)
+          __Pyx_GOTREF(__pyx_t_17);
+          if (__pyx_t_16) {
+            __Pyx_GIVEREF(__pyx_t_16); PyTuple_SET_ITEM(__pyx_t_17, 0, __pyx_t_16); __pyx_t_16 = NULL;
           }
+          __Pyx_INCREF(__pyx_v__node);
+          __Pyx_GIVEREF(__pyx_v__node);
+          PyTuple_SET_ITEM(__pyx_t_17, 0+__pyx_t_6, __pyx_v__node);
+          __Pyx_GIVEREF(__pyx_t_15);
+          PyTuple_SET_ITEM(__pyx_t_17, 1+__pyx_t_6, __pyx_t_15);
+          __pyx_t_15 = 0;
+          __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_17, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 116, __pyx_L16_except_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_Raise(__pyx_builtin_AttributeError, __pyx_t_4, 0, 0);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __PYX_ERR(0, 115, __pyx_L16_except_error)
+          __PYX_ERR(0, 116, __pyx_L16_except_error)
         }
         __pyx_L14_error:;
         __Pyx_PyThreadState_assign
@@ -3174,7 +3217,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
 
         /* "irpy.pyx":107
  *             try:
- *                 getattr(obj, self.incoherent)
+ *                 i = getattr(obj, self.incoherent)
  *             except AttributeError:             # <<<<<<<<<<<<<<
  *                 d_path[obj].append(_node)
  * 
@@ -3182,13 +3225,13 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
         __pyx_t_11 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_AttributeError);
         if (__pyx_t_11) {
           __Pyx_AddTraceback("irpy.lazy_property.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-          if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_7, &__pyx_t_16) < 0) __PYX_ERR(0, 107, __pyx_L16_except_error)
+          if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_7, &__pyx_t_17) < 0) __PYX_ERR(0, 107, __pyx_L16_except_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_GOTREF(__pyx_t_7);
-          __Pyx_GOTREF(__pyx_t_16);
+          __Pyx_GOTREF(__pyx_t_17);
 
           /* "irpy.pyx":108
- *                 getattr(obj, self.incoherent)
+ *                 i = getattr(obj, self.incoherent)
  *             except AttributeError:
  *                 d_path[obj].append(_node)             # <<<<<<<<<<<<<<
  * 
@@ -3196,11 +3239,11 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
  */
           __pyx_t_15 = __Pyx_GetModuleGlobalName(__pyx_n_s_d_path); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 108, __pyx_L16_except_error)
           __Pyx_GOTREF(__pyx_t_15);
-          __pyx_t_17 = PyObject_GetItem(__pyx_t_15, __pyx_v_obj); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 108, __pyx_L16_except_error)
-          __Pyx_GOTREF(__pyx_t_17);
+          __pyx_t_16 = PyObject_GetItem(__pyx_t_15, __pyx_v_obj); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 108, __pyx_L16_except_error)
+          __Pyx_GOTREF(__pyx_t_16);
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-          __pyx_t_18 = __Pyx_PyObject_Append(__pyx_t_17, __pyx_v__node); if (unlikely(__pyx_t_18 == -1)) __PYX_ERR(0, 108, __pyx_L16_except_error)
-          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+          __pyx_t_18 = __Pyx_PyObject_Append(__pyx_t_16, __pyx_v__node); if (unlikely(__pyx_t_18 == -1)) __PYX_ERR(0, 108, __pyx_L16_except_error)
+          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
           /* "irpy.pyx":110
  *                 d_path[obj].append(_node)
@@ -3222,8 +3265,8 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
             }
           }
           if (!__pyx_t_19) {
-            __pyx_t_17 = __Pyx_PyObject_CallOneArg(__pyx_t_15, __pyx_v_obj); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 110, __pyx_L16_except_error)
-            __Pyx_GOTREF(__pyx_t_17);
+            __pyx_t_16 = __Pyx_PyObject_CallOneArg(__pyx_t_15, __pyx_v_obj); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 110, __pyx_L16_except_error)
+            __Pyx_GOTREF(__pyx_t_16);
           } else {
             __pyx_t_20 = PyTuple_New(1+1); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 110, __pyx_L16_except_error)
             __Pyx_GOTREF(__pyx_t_20);
@@ -3231,13 +3274,13 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
             __Pyx_INCREF(__pyx_v_obj);
             __Pyx_GIVEREF(__pyx_v_obj);
             PyTuple_SET_ITEM(__pyx_t_20, 0+1, __pyx_v_obj);
-            __pyx_t_17 = __Pyx_PyObject_Call(__pyx_t_15, __pyx_t_20, NULL); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 110, __pyx_L16_except_error)
-            __Pyx_GOTREF(__pyx_t_17);
+            __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_15, __pyx_t_20, NULL); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 110, __pyx_L16_except_error)
+            __Pyx_GOTREF(__pyx_t_16);
             __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
           }
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-          __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_17);
-          __pyx_t_17 = 0;
+          __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_16);
+          __pyx_t_16 = 0;
 
           /* "irpy.pyx":111
  * 
@@ -3253,20 +3296,20 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
  * 
  *                 d_path[obj].pop()             # <<<<<<<<<<<<<<
  *             else:
- *                 raise AttributeError, "Node is incoherent {0}".format(_node)
+ *                 msg = "Node {0} have been removed from the tree by {1}"
  */
-          __pyx_t_17 = __Pyx_GetModuleGlobalName(__pyx_n_s_d_path); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 113, __pyx_L16_except_error)
-          __Pyx_GOTREF(__pyx_t_17);
-          __pyx_t_15 = PyObject_GetItem(__pyx_t_17, __pyx_v_obj); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 113, __pyx_L16_except_error)
+          __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_d_path); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 113, __pyx_L16_except_error)
+          __Pyx_GOTREF(__pyx_t_16);
+          __pyx_t_15 = PyObject_GetItem(__pyx_t_16, __pyx_v_obj); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 113, __pyx_L16_except_error)
           __Pyx_GOTREF(__pyx_t_15);
-          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-          __pyx_t_17 = __Pyx_PyObject_Pop(__pyx_t_15); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 113, __pyx_L16_except_error)
-          __Pyx_GOTREF(__pyx_t_17);
+          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+          __pyx_t_16 = __Pyx_PyObject_Pop(__pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 113, __pyx_L16_except_error)
+          __Pyx_GOTREF(__pyx_t_16);
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
           goto __pyx_L15_exception_handled;
         }
         goto __pyx_L16_except_error;
@@ -3276,7 +3319,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
  *         except AttributeError:
  * 
  *             try:             # <<<<<<<<<<<<<<
- *                 getattr(obj, self.incoherent)
+ *                 i = getattr(obj, self.incoherent)
  *             except AttributeError:
  */
         __Pyx_PyThreadState_assign
@@ -3322,8 +3365,8 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
     __pyx_L11_try_end:;
   }
 
-  /* "irpy.pyx":117
- *                 raise AttributeError, "Node is incoherent {0}".format(_node)
+  /* "irpy.pyx":118
+ *                 raise AttributeError, msg.format(_node," ".join(i))
  * 
  *         return value             # <<<<<<<<<<<<<<
  * 
@@ -3360,12 +3403,14 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_2__get__(CYTHON_UNUSED PyObject 
   __Pyx_XDECREF(__pyx_v__caller);
   __Pyx_XDECREF(__pyx_v__node);
   __Pyx_XDECREF(__pyx_v_value);
+  __Pyx_XDECREF(__pyx_v_i);
+  __Pyx_XDECREF(__pyx_v_msg);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "irpy.pyx":119
+/* "irpy.pyx":120
  *         return value
  * 
  *     def __set__(self, obj, value):             # <<<<<<<<<<<<<<
@@ -3405,16 +3450,16 @@ static PyObject *__pyx_pw_4irpy_13lazy_property_5__set__(PyObject *__pyx_self, P
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_obj)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__set__", 1, 3, 3, 1); __PYX_ERR(0, 119, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__set__", 1, 3, 3, 1); __PYX_ERR(0, 120, __pyx_L3_error)
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_value)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__set__", 1, 3, 3, 2); __PYX_ERR(0, 119, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__set__", 1, 3, 3, 2); __PYX_ERR(0, 120, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__set__") < 0)) __PYX_ERR(0, 119, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__set__") < 0)) __PYX_ERR(0, 120, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -3429,7 +3474,7 @@ static PyObject *__pyx_pw_4irpy_13lazy_property_5__set__(PyObject *__pyx_self, P
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__set__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 119, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__set__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 120, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("irpy.lazy_property.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3472,54 +3517,54 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
   PyObject *__pyx_t_21 = NULL;
   __Pyx_RefNannySetupContext("__set__", 0);
 
-  /* "irpy.pyx":125
+  /* "irpy.pyx":126
  *         """
  * 
  *         _node = self._node             # <<<<<<<<<<<<<<
  * 
  *         if self.immutable:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v__node = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "irpy.pyx":127
+  /* "irpy.pyx":128
  *         _node = self._node
  * 
  *         if self.immutable:             # <<<<<<<<<<<<<<
  *             if self.leaf_node:
  *                 self.leaf_node = False
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_immutable); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_immutable); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "irpy.pyx":128
+    /* "irpy.pyx":129
  * 
  *         if self.immutable:
  *             if self.leaf_node:             # <<<<<<<<<<<<<<
  *                 self.leaf_node = False
  *             else:
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_leaf_node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_leaf_node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_2) {
 
-      /* "irpy.pyx":129
+      /* "irpy.pyx":130
  *         if self.immutable:
  *             if self.leaf_node:
  *                 self.leaf_node = False             # <<<<<<<<<<<<<<
  *             else:
  *                 raise AttributeError, "Immutable Node {0}".format(_node)
  */
-      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_leaf_node, Py_False) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
+      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_leaf_node, Py_False) < 0) __PYX_ERR(0, 130, __pyx_L1_error)
 
-      /* "irpy.pyx":128
+      /* "irpy.pyx":129
  * 
  *         if self.immutable:
  *             if self.leaf_node:             # <<<<<<<<<<<<<<
@@ -3529,7 +3574,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       goto __pyx_L4;
     }
 
-    /* "irpy.pyx":131
+    /* "irpy.pyx":132
  *                 self.leaf_node = False
  *             else:
  *                 raise AttributeError, "Immutable Node {0}".format(_node)             # <<<<<<<<<<<<<<
@@ -3537,7 +3582,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  *         try:
  */
     /*else*/ {
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_Immutable_Node_0, __pyx_n_s_format); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_Immutable_Node_0, __pyx_n_s_format); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 132, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_4 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -3550,27 +3595,27 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
         }
       }
       if (!__pyx_t_4) {
-        __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v__node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v__node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
       } else {
-        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 132, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
         __Pyx_INCREF(__pyx_v__node);
         __Pyx_GIVEREF(__pyx_v__node);
         PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v__node);
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_Raise(__pyx_builtin_AttributeError, __pyx_t_1, 0, 0);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __PYX_ERR(0, 131, __pyx_L1_error)
+      __PYX_ERR(0, 132, __pyx_L1_error)
     }
     __pyx_L4:;
 
-    /* "irpy.pyx":127
+    /* "irpy.pyx":128
  *         _node = self._node
  * 
  *         if self.immutable:             # <<<<<<<<<<<<<<
@@ -3579,7 +3624,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  */
   }
 
-  /* "irpy.pyx":133
+  /* "irpy.pyx":134
  *                 raise AttributeError, "Immutable Node {0}".format(_node)
  * 
  *         try:             # <<<<<<<<<<<<<<
@@ -3596,19 +3641,19 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       __Pyx_XGOTREF(__pyx_t_8);
       /*try:*/ {
 
-        /* "irpy.pyx":134
+        /* "irpy.pyx":135
  * 
  *         try:
  *             cur_value = getattr(obj, _node)             # <<<<<<<<<<<<<<
  *         except AttributeError:
  *             cur_value = None
  */
-        __pyx_t_1 = __Pyx_GetAttr(__pyx_v_obj, __pyx_v__node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 134, __pyx_L8_error)
+        __pyx_t_1 = __Pyx_GetAttr(__pyx_v_obj, __pyx_v__node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L8_error)
         __Pyx_GOTREF(__pyx_t_1);
         __pyx_v_cur_value = __pyx_t_1;
         __pyx_t_1 = 0;
 
-        /* "irpy.pyx":133
+        /* "irpy.pyx":134
  *                 raise AttributeError, "Immutable Node {0}".format(_node)
  * 
  *         try:             # <<<<<<<<<<<<<<
@@ -3627,7 +3672,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "irpy.pyx":135
+      /* "irpy.pyx":136
  *         try:
  *             cur_value = getattr(obj, _node)
  *         except AttributeError:             # <<<<<<<<<<<<<<
@@ -3637,12 +3682,12 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       __pyx_t_9 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_AttributeError);
       if (__pyx_t_9) {
         __Pyx_AddTraceback("irpy.lazy_property.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-        if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_3, &__pyx_t_5) < 0) __PYX_ERR(0, 135, __pyx_L10_except_error)
+        if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_3, &__pyx_t_5) < 0) __PYX_ERR(0, 136, __pyx_L10_except_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_GOTREF(__pyx_t_5);
 
-        /* "irpy.pyx":136
+        /* "irpy.pyx":137
  *             cur_value = getattr(obj, _node)
  *         except AttributeError:
  *             cur_value = None             # <<<<<<<<<<<<<<
@@ -3659,7 +3704,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       goto __pyx_L10_except_error;
       __pyx_L10_except_error:;
 
-      /* "irpy.pyx":133
+      /* "irpy.pyx":134
  *                 raise AttributeError, "Immutable Node {0}".format(_node)
  * 
  *         try:             # <<<<<<<<<<<<<<
@@ -3682,7 +3727,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
     }
   }
 
-  /* "irpy.pyx":138
+  /* "irpy.pyx":139
  *             cur_value = None
  *         finally:
  *             if cur_value != value:             # <<<<<<<<<<<<<<
@@ -3691,28 +3736,28 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  */
   /*finally:*/ {
     /*normal exit:*/{
-      __pyx_t_5 = PyObject_RichCompare(__pyx_v_cur_value, __pyx_v_value, Py_NE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 138, __pyx_L1_error)
-      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 138, __pyx_L1_error)
+      __pyx_t_5 = PyObject_RichCompare(__pyx_v_cur_value, __pyx_v_value, Py_NE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 139, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       if (__pyx_t_2) {
 
-        /* "irpy.pyx":139
+        /* "irpy.pyx":140
  *         finally:
  *             if cur_value != value:
  *                 setattr(obj, _node, value)             # <<<<<<<<<<<<<<
  * 
  *                 #Remove_ancestor_cache
  */
-        __pyx_t_10 = PyObject_SetAttr(__pyx_v_obj, __pyx_v__node, __pyx_v_value); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 139, __pyx_L1_error)
+        __pyx_t_10 = PyObject_SetAttr(__pyx_v_obj, __pyx_v__node, __pyx_v_value); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 140, __pyx_L1_error)
 
-        /* "irpy.pyx":142
+        /* "irpy.pyx":143
  * 
  *                 #Remove_ancestor_cache
  *                 for _parent in genealogy(obj, _node, "parents"):             # <<<<<<<<<<<<<<
  *                     if hasattr(obj, _parent): delattr(obj, _parent)
  * 
  */
-        __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __pyx_t_1 = NULL;
         __pyx_t_11 = 0;
@@ -3726,7 +3771,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __pyx_t_11 = 1;
           }
         }
-        __pyx_t_4 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 142, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 143, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         if (__pyx_t_1) {
           __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1); __pyx_t_1 = NULL;
@@ -3740,7 +3785,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
         __Pyx_INCREF(__pyx_n_s_parents);
         __Pyx_GIVEREF(__pyx_n_s_parents);
         PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_11, __pyx_n_s_parents);
-        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3748,9 +3793,9 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __pyx_t_3 = __pyx_t_5; __Pyx_INCREF(__pyx_t_3); __pyx_t_11 = 0;
           __pyx_t_12 = NULL;
         } else {
-          __pyx_t_11 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L1_error)
+          __pyx_t_11 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_12 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 142, __pyx_L1_error)
+          __pyx_t_12 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 143, __pyx_L1_error)
         }
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         for (;;) {
@@ -3758,17 +3803,17 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             if (likely(PyList_CheckExact(__pyx_t_3))) {
               if (__pyx_t_11 >= PyList_GET_SIZE(__pyx_t_3)) break;
               #if CYTHON_COMPILING_IN_CPYTHON
-              __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 142, __pyx_L1_error)
+              __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 143, __pyx_L1_error)
               #else
-              __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+              __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
               __Pyx_GOTREF(__pyx_t_5);
               #endif
             } else {
               if (__pyx_t_11 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
               #if CYTHON_COMPILING_IN_CPYTHON
-              __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 142, __pyx_L1_error)
+              __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 143, __pyx_L1_error)
               #else
-              __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+              __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
               __Pyx_GOTREF(__pyx_t_5);
               #endif
             }
@@ -3778,7 +3823,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               PyObject* exc_type = PyErr_Occurred();
               if (exc_type) {
                 if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 142, __pyx_L1_error)
+                else __PYX_ERR(0, 143, __pyx_L1_error)
               }
               break;
             }
@@ -3787,20 +3832,20 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __Pyx_XDECREF_SET(__pyx_v__parent, __pyx_t_5);
           __pyx_t_5 = 0;
 
-          /* "irpy.pyx":143
+          /* "irpy.pyx":144
  *                 #Remove_ancestor_cache
  *                 for _parent in genealogy(obj, _node, "parents"):
  *                     if hasattr(obj, _parent): delattr(obj, _parent)             # <<<<<<<<<<<<<<
  * 
  *                 #Descendant are now incoherent;
  */
-          __pyx_t_2 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(0, 143, __pyx_L1_error)
+          __pyx_t_2 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(0, 144, __pyx_L1_error)
           __pyx_t_13 = (__pyx_t_2 != 0);
           if (__pyx_t_13) {
-            __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 143, __pyx_L1_error)
+            __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 144, __pyx_L1_error)
           }
 
-          /* "irpy.pyx":142
+          /* "irpy.pyx":143
  * 
  *                 #Remove_ancestor_cache
  *                 for _parent in genealogy(obj, _node, "parents"):             # <<<<<<<<<<<<<<
@@ -3810,14 +3855,14 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
         }
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-        /* "irpy.pyx":147
+        /* "irpy.pyx":148
  *                 #Descendant are now incoherent;
  *                 #cause of the get optimization, we need to remove there cache.
  *                 for _child in genealogy(obj, _node, "children"):             # <<<<<<<<<<<<<<
  *                     appendattr(obj, "%s_incoherent" % (_child), _node)
  *                     if hasattr(obj, _child): delattr(obj, _child)
  */
-        __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         __pyx_t_4 = NULL;
         __pyx_t_11 = 0;
@@ -3831,7 +3876,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __pyx_t_11 = 1;
           }
         }
-        __pyx_t_1 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_1 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         if (__pyx_t_4) {
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -3845,7 +3890,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
         __Pyx_INCREF(__pyx_n_s_children);
         __Pyx_GIVEREF(__pyx_n_s_children);
         PyTuple_SET_ITEM(__pyx_t_1, 2+__pyx_t_11, __pyx_n_s_children);
-        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -3853,9 +3898,9 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __pyx_t_5 = __pyx_t_3; __Pyx_INCREF(__pyx_t_5); __pyx_t_11 = 0;
           __pyx_t_12 = NULL;
         } else {
-          __pyx_t_11 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 147, __pyx_L1_error)
+          __pyx_t_11 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 148, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __pyx_t_12 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 147, __pyx_L1_error)
+          __pyx_t_12 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 148, __pyx_L1_error)
         }
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         for (;;) {
@@ -3863,17 +3908,17 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             if (likely(PyList_CheckExact(__pyx_t_5))) {
               if (__pyx_t_11 >= PyList_GET_SIZE(__pyx_t_5)) break;
               #if CYTHON_COMPILING_IN_CPYTHON
-              __pyx_t_3 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 147, __pyx_L1_error)
+              __pyx_t_3 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 148, __pyx_L1_error)
               #else
-              __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L1_error)
+              __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
               __Pyx_GOTREF(__pyx_t_3);
               #endif
             } else {
               if (__pyx_t_11 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
               #if CYTHON_COMPILING_IN_CPYTHON
-              __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 147, __pyx_L1_error)
+              __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 148, __pyx_L1_error)
               #else
-              __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L1_error)
+              __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
               __Pyx_GOTREF(__pyx_t_3);
               #endif
             }
@@ -3883,7 +3928,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               PyObject* exc_type = PyErr_Occurred();
               if (exc_type) {
                 if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 147, __pyx_L1_error)
+                else __PYX_ERR(0, 148, __pyx_L1_error)
               }
               break;
             }
@@ -3892,16 +3937,16 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __Pyx_XDECREF_SET(__pyx_v__child, __pyx_t_3);
           __pyx_t_3 = 0;
 
-          /* "irpy.pyx":148
+          /* "irpy.pyx":149
  *                 #cause of the get optimization, we need to remove there cache.
  *                 for _child in genealogy(obj, _node, "children"):
  *                     appendattr(obj, "%s_incoherent" % (_child), _node)             # <<<<<<<<<<<<<<
  *                     if hasattr(obj, _child): delattr(obj, _child)
  * 
  */
-          __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_appendattr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_appendattr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__child); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__child); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 149, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_14 = NULL;
           __pyx_t_15 = 0;
@@ -3915,7 +3960,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               __pyx_t_15 = 1;
             }
           }
-          __pyx_t_16 = PyTuple_New(3+__pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __pyx_t_16 = PyTuple_New(3+__pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 149, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_16);
           if (__pyx_t_14) {
             __Pyx_GIVEREF(__pyx_t_14); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_14); __pyx_t_14 = NULL;
@@ -3929,26 +3974,26 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __Pyx_GIVEREF(__pyx_v__node);
           PyTuple_SET_ITEM(__pyx_t_16, 2+__pyx_t_15, __pyx_v__node);
           __pyx_t_4 = 0;
-          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 149, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-          /* "irpy.pyx":149
+          /* "irpy.pyx":150
  *                 for _child in genealogy(obj, _node, "children"):
  *                     appendattr(obj, "%s_incoherent" % (_child), _node)
  *                     if hasattr(obj, _child): delattr(obj, _child)             # <<<<<<<<<<<<<<
  * 
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  */
-          __pyx_t_13 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 149, __pyx_L1_error)
+          __pyx_t_13 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 150, __pyx_L1_error)
           __pyx_t_2 = (__pyx_t_13 != 0);
           if (__pyx_t_2) {
-            __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 149, __pyx_L1_error)
+            __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 150, __pyx_L1_error)
           }
 
-          /* "irpy.pyx":147
+          /* "irpy.pyx":148
  *                 #Descendant are now incoherent;
  *                 #cause of the get optimization, we need to remove there cache.
  *                 for _child in genealogy(obj, _node, "children"):             # <<<<<<<<<<<<<<
@@ -3958,28 +4003,28 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
         }
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "irpy.pyx":152
+        /* "irpy.pyx":153
  * 
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  *                 if hasattr(obj, "%s_incoherent" % (_node)):             # <<<<<<<<<<<<<<
  *                     sibling_coherence(obj, _node)
  * 
  */
-        __pyx_t_5 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__node); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 152, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__node); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_2 = PyObject_HasAttr(__pyx_v_obj, __pyx_t_5); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(0, 152, __pyx_L1_error)
+        __pyx_t_2 = PyObject_HasAttr(__pyx_v_obj, __pyx_t_5); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(0, 153, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         __pyx_t_13 = (__pyx_t_2 != 0);
         if (__pyx_t_13) {
 
-          /* "irpy.pyx":153
+          /* "irpy.pyx":154
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  *                 if hasattr(obj, "%s_incoherent" % (_node)):
  *                     sibling_coherence(obj, _node)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-          __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_sibling_coherence); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 153, __pyx_L1_error)
+          __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_sibling_coherence); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 154, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           __pyx_t_1 = NULL;
           __pyx_t_11 = 0;
@@ -3993,7 +4038,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               __pyx_t_11 = 1;
             }
           }
-          __pyx_t_16 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 153, __pyx_L1_error)
+          __pyx_t_16 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 154, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_16);
           if (__pyx_t_1) {
             __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_1); __pyx_t_1 = NULL;
@@ -4004,13 +4049,13 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __Pyx_INCREF(__pyx_v__node);
           __Pyx_GIVEREF(__pyx_v__node);
           PyTuple_SET_ITEM(__pyx_t_16, 1+__pyx_t_11, __pyx_v__node);
-          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_16, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_16, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 154, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-          /* "irpy.pyx":152
+          /* "irpy.pyx":153
  * 
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  *                 if hasattr(obj, "%s_incoherent" % (_node)):             # <<<<<<<<<<<<<<
@@ -4019,7 +4064,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  */
         }
 
-        /* "irpy.pyx":138
+        /* "irpy.pyx":139
  *             cur_value = None
  *         finally:
  *             if cur_value != value:             # <<<<<<<<<<<<<<
@@ -4048,29 +4093,29 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       __Pyx_XGOTREF(__pyx_t_21);
       __pyx_t_9 = __pyx_lineno; __pyx_t_17 = __pyx_clineno; __pyx_t_18 = __pyx_filename;
       {
-        if (unlikely(!__pyx_v_cur_value)) { __Pyx_RaiseUnboundLocalError("cur_value"); __PYX_ERR(0, 138, __pyx_L27_error) }
-        __pyx_t_5 = PyObject_RichCompare(__pyx_v_cur_value, __pyx_v_value, Py_NE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 138, __pyx_L27_error)
-        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(0, 138, __pyx_L27_error)
+        if (unlikely(!__pyx_v_cur_value)) { __Pyx_RaiseUnboundLocalError("cur_value"); __PYX_ERR(0, 139, __pyx_L27_error) }
+        __pyx_t_5 = PyObject_RichCompare(__pyx_v_cur_value, __pyx_v_value, Py_NE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L27_error)
+        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(0, 139, __pyx_L27_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         if (__pyx_t_13) {
 
-          /* "irpy.pyx":139
+          /* "irpy.pyx":140
  *         finally:
  *             if cur_value != value:
  *                 setattr(obj, _node, value)             # <<<<<<<<<<<<<<
  * 
  *                 #Remove_ancestor_cache
  */
-          __pyx_t_10 = PyObject_SetAttr(__pyx_v_obj, __pyx_v__node, __pyx_v_value); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 139, __pyx_L27_error)
+          __pyx_t_10 = PyObject_SetAttr(__pyx_v_obj, __pyx_v__node, __pyx_v_value); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 140, __pyx_L27_error)
 
-          /* "irpy.pyx":142
+          /* "irpy.pyx":143
  * 
  *                 #Remove_ancestor_cache
  *                 for _parent in genealogy(obj, _node, "parents"):             # <<<<<<<<<<<<<<
  *                     if hasattr(obj, _parent): delattr(obj, _parent)
  * 
  */
-          __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L27_error)
+          __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_3);
           __pyx_t_16 = NULL;
           __pyx_t_11 = 0;
@@ -4084,7 +4129,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               __pyx_t_11 = 1;
             }
           }
-          __pyx_t_1 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L27_error)
+          __pyx_t_1 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_1);
           if (__pyx_t_16) {
             __Pyx_GIVEREF(__pyx_t_16); PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_16); __pyx_t_16 = NULL;
@@ -4098,7 +4143,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __Pyx_INCREF(__pyx_n_s_parents);
           __Pyx_GIVEREF(__pyx_n_s_parents);
           PyTuple_SET_ITEM(__pyx_t_1, 2+__pyx_t_11, __pyx_n_s_parents);
-          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_1, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L27_error)
+          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_1, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -4106,9 +4151,9 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __pyx_t_3 = __pyx_t_5; __Pyx_INCREF(__pyx_t_3); __pyx_t_11 = 0;
             __pyx_t_12 = NULL;
           } else {
-            __pyx_t_11 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L27_error)
+            __pyx_t_11 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_3);
-            __pyx_t_12 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 142, __pyx_L27_error)
+            __pyx_t_12 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 143, __pyx_L27_error)
           }
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           for (;;) {
@@ -4116,17 +4161,17 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               if (likely(PyList_CheckExact(__pyx_t_3))) {
                 if (__pyx_t_11 >= PyList_GET_SIZE(__pyx_t_3)) break;
                 #if CYTHON_COMPILING_IN_CPYTHON
-                __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 142, __pyx_L27_error)
+                __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 143, __pyx_L27_error)
                 #else
-                __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L27_error)
+                __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L27_error)
                 __Pyx_GOTREF(__pyx_t_5);
                 #endif
               } else {
                 if (__pyx_t_11 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
                 #if CYTHON_COMPILING_IN_CPYTHON
-                __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 142, __pyx_L27_error)
+                __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_11); __Pyx_INCREF(__pyx_t_5); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 143, __pyx_L27_error)
                 #else
-                __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L27_error)
+                __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L27_error)
                 __Pyx_GOTREF(__pyx_t_5);
                 #endif
               }
@@ -4136,7 +4181,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
                 PyObject* exc_type = PyErr_Occurred();
                 if (exc_type) {
                   if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                  else __PYX_ERR(0, 142, __pyx_L27_error)
+                  else __PYX_ERR(0, 143, __pyx_L27_error)
                 }
                 break;
               }
@@ -4145,20 +4190,20 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __Pyx_XDECREF_SET(__pyx_v__parent, __pyx_t_5);
             __pyx_t_5 = 0;
 
-            /* "irpy.pyx":143
+            /* "irpy.pyx":144
  *                 #Remove_ancestor_cache
  *                 for _parent in genealogy(obj, _node, "parents"):
  *                     if hasattr(obj, _parent): delattr(obj, _parent)             # <<<<<<<<<<<<<<
  * 
  *                 #Descendant are now incoherent;
  */
-            __pyx_t_13 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 143, __pyx_L27_error)
+            __pyx_t_13 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 144, __pyx_L27_error)
             __pyx_t_2 = (__pyx_t_13 != 0);
             if (__pyx_t_2) {
-              __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 143, __pyx_L27_error)
+              __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__parent); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 144, __pyx_L27_error)
             }
 
-            /* "irpy.pyx":142
+            /* "irpy.pyx":143
  * 
  *                 #Remove_ancestor_cache
  *                 for _parent in genealogy(obj, _node, "parents"):             # <<<<<<<<<<<<<<
@@ -4168,14 +4213,14 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           }
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-          /* "irpy.pyx":147
+          /* "irpy.pyx":148
  *                 #Descendant are now incoherent;
  *                 #cause of the get optimization, we need to remove there cache.
  *                 for _child in genealogy(obj, _node, "children"):             # <<<<<<<<<<<<<<
  *                     appendattr(obj, "%s_incoherent" % (_child), _node)
  *                     if hasattr(obj, _child): delattr(obj, _child)
  */
-          __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 147, __pyx_L27_error)
+          __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_genealogy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 148, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_5);
           __pyx_t_1 = NULL;
           __pyx_t_11 = 0;
@@ -4189,7 +4234,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               __pyx_t_11 = 1;
             }
           }
-          __pyx_t_16 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 147, __pyx_L27_error)
+          __pyx_t_16 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 148, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_16);
           if (__pyx_t_1) {
             __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_1); __pyx_t_1 = NULL;
@@ -4203,7 +4248,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           __Pyx_INCREF(__pyx_n_s_children);
           __Pyx_GIVEREF(__pyx_n_s_children);
           PyTuple_SET_ITEM(__pyx_t_16, 2+__pyx_t_11, __pyx_n_s_children);
-          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L27_error)
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -4211,9 +4256,9 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __pyx_t_5 = __pyx_t_3; __Pyx_INCREF(__pyx_t_5); __pyx_t_11 = 0;
             __pyx_t_12 = NULL;
           } else {
-            __pyx_t_11 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 147, __pyx_L27_error)
+            __pyx_t_11 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 148, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_5);
-            __pyx_t_12 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 147, __pyx_L27_error)
+            __pyx_t_12 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 148, __pyx_L27_error)
           }
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           for (;;) {
@@ -4221,17 +4266,17 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
               if (likely(PyList_CheckExact(__pyx_t_5))) {
                 if (__pyx_t_11 >= PyList_GET_SIZE(__pyx_t_5)) break;
                 #if CYTHON_COMPILING_IN_CPYTHON
-                __pyx_t_3 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 147, __pyx_L27_error)
+                __pyx_t_3 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 148, __pyx_L27_error)
                 #else
-                __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L27_error)
+                __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L27_error)
                 __Pyx_GOTREF(__pyx_t_3);
                 #endif
               } else {
                 if (__pyx_t_11 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
                 #if CYTHON_COMPILING_IN_CPYTHON
-                __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 147, __pyx_L27_error)
+                __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 148, __pyx_L27_error)
                 #else
-                __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L27_error)
+                __pyx_t_3 = PySequence_ITEM(__pyx_t_5, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L27_error)
                 __Pyx_GOTREF(__pyx_t_3);
                 #endif
               }
@@ -4241,7 +4286,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
                 PyObject* exc_type = PyErr_Occurred();
                 if (exc_type) {
                   if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                  else __PYX_ERR(0, 147, __pyx_L27_error)
+                  else __PYX_ERR(0, 148, __pyx_L27_error)
                 }
                 break;
               }
@@ -4250,16 +4295,16 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __Pyx_XDECREF_SET(__pyx_v__child, __pyx_t_3);
             __pyx_t_3 = 0;
 
-            /* "irpy.pyx":148
+            /* "irpy.pyx":149
  *                 #cause of the get optimization, we need to remove there cache.
  *                 for _child in genealogy(obj, _node, "children"):
  *                     appendattr(obj, "%s_incoherent" % (_child), _node)             # <<<<<<<<<<<<<<
  *                     if hasattr(obj, _child): delattr(obj, _child)
  * 
  */
-            __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_appendattr); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 148, __pyx_L27_error)
+            __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_appendattr); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 149, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_16);
-            __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__child); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L27_error)
+            __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__child); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_1);
             __pyx_t_4 = NULL;
             __pyx_t_15 = 0;
@@ -4273,7 +4318,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
                 __pyx_t_15 = 1;
               }
             }
-            __pyx_t_14 = PyTuple_New(3+__pyx_t_15); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 148, __pyx_L27_error)
+            __pyx_t_14 = PyTuple_New(3+__pyx_t_15); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 149, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_14);
             if (__pyx_t_4) {
               __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_14, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -4287,26 +4332,26 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __Pyx_GIVEREF(__pyx_v__node);
             PyTuple_SET_ITEM(__pyx_t_14, 2+__pyx_t_15, __pyx_v__node);
             __pyx_t_1 = 0;
-            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_16, __pyx_t_14, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L27_error)
+            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_16, __pyx_t_14, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 149, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
             __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-            /* "irpy.pyx":149
+            /* "irpy.pyx":150
  *                 for _child in genealogy(obj, _node, "children"):
  *                     appendattr(obj, "%s_incoherent" % (_child), _node)
  *                     if hasattr(obj, _child): delattr(obj, _child)             # <<<<<<<<<<<<<<
  * 
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  */
-            __pyx_t_2 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(0, 149, __pyx_L27_error)
+            __pyx_t_2 = PyObject_HasAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(0, 150, __pyx_L27_error)
             __pyx_t_13 = (__pyx_t_2 != 0);
             if (__pyx_t_13) {
-              __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 149, __pyx_L27_error)
+              __pyx_t_10 = PyObject_DelAttr(__pyx_v_obj, __pyx_v__child); if (unlikely(__pyx_t_10 == -1)) __PYX_ERR(0, 150, __pyx_L27_error)
             }
 
-            /* "irpy.pyx":147
+            /* "irpy.pyx":148
  *                 #Descendant are now incoherent;
  *                 #cause of the get optimization, we need to remove there cache.
  *                 for _child in genealogy(obj, _node, "children"):             # <<<<<<<<<<<<<<
@@ -4316,28 +4361,28 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
           }
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-          /* "irpy.pyx":152
+          /* "irpy.pyx":153
  * 
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  *                 if hasattr(obj, "%s_incoherent" % (_node)):             # <<<<<<<<<<<<<<
  *                     sibling_coherence(obj, _node)
  * 
  */
-          __pyx_t_5 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__node); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 152, __pyx_L27_error)
+          __pyx_t_5 = __Pyx_PyString_Format(__pyx_kp_s_s_incoherent, __pyx_v__node); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L27_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __pyx_t_13 = PyObject_HasAttr(__pyx_v_obj, __pyx_t_5); if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 152, __pyx_L27_error)
+          __pyx_t_13 = PyObject_HasAttr(__pyx_v_obj, __pyx_t_5); if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 153, __pyx_L27_error)
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __pyx_t_2 = (__pyx_t_13 != 0);
           if (__pyx_t_2) {
 
-            /* "irpy.pyx":153
+            /* "irpy.pyx":154
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  *                 if hasattr(obj, "%s_incoherent" % (_node)):
  *                     sibling_coherence(obj, _node)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-            __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_sibling_coherence); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 153, __pyx_L27_error)
+            __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_sibling_coherence); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 154, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_3);
             __pyx_t_16 = NULL;
             __pyx_t_11 = 0;
@@ -4351,7 +4396,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
                 __pyx_t_11 = 1;
               }
             }
-            __pyx_t_14 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 153, __pyx_L27_error)
+            __pyx_t_14 = PyTuple_New(2+__pyx_t_11); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 154, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_14);
             if (__pyx_t_16) {
               __Pyx_GIVEREF(__pyx_t_16); PyTuple_SET_ITEM(__pyx_t_14, 0, __pyx_t_16); __pyx_t_16 = NULL;
@@ -4362,13 +4407,13 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
             __Pyx_INCREF(__pyx_v__node);
             __Pyx_GIVEREF(__pyx_v__node);
             PyTuple_SET_ITEM(__pyx_t_14, 1+__pyx_t_11, __pyx_v__node);
-            __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_14, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L27_error)
+            __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_14, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 154, __pyx_L27_error)
             __Pyx_GOTREF(__pyx_t_5);
             __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
             __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-            /* "irpy.pyx":152
+            /* "irpy.pyx":153
  * 
  *                 #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
  *                 if hasattr(obj, "%s_incoherent" % (_node)):             # <<<<<<<<<<<<<<
@@ -4377,7 +4422,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  */
           }
 
-          /* "irpy.pyx":138
+          /* "irpy.pyx":139
  *             cur_value = None
  *         finally:
  *             if cur_value != value:             # <<<<<<<<<<<<<<
@@ -4417,7 +4462,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
     __pyx_L7:;
   }
 
-  /* "irpy.pyx":119
+  /* "irpy.pyx":120
  *         return value
  * 
  *     def __set__(self, obj, value):             # <<<<<<<<<<<<<<
@@ -4447,7 +4492,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
   return __pyx_r;
 }
 
-/* "irpy.pyx":156
+/* "irpy.pyx":157
  * 
  * 
  * def lazy_property_mutable(provider):             # <<<<<<<<<<<<<<
@@ -4478,7 +4523,7 @@ static PyObject *__pyx_pf_4irpy_6lazy_property_mutable(CYTHON_UNUSED PyObject *_
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("lazy_property_mutable", 0);
 
-  /* "irpy.pyx":158
+  /* "irpy.pyx":159
  * def lazy_property_mutable(provider):
  *     "Return a lazy_property mutable"
  *     return lazy_property(provider=provider, immutable=False)             # <<<<<<<<<<<<<<
@@ -4486,13 +4531,13 @@ static PyObject *__pyx_pf_4irpy_6lazy_property_mutable(CYTHON_UNUSED PyObject *_
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_lazy_property); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 158, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_lazy_property); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 158, __pyx_L1_error)
+  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_provider, __pyx_v_provider) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_immutable, Py_False) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 158, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_provider, __pyx_v_provider) < 0) __PYX_ERR(0, 159, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_immutable, Py_False) < 0) __PYX_ERR(0, 159, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4500,7 +4545,7 @@ static PyObject *__pyx_pf_4irpy_6lazy_property_mutable(CYTHON_UNUSED PyObject *_
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "irpy.pyx":156
+  /* "irpy.pyx":157
  * 
  * 
  * def lazy_property_mutable(provider):             # <<<<<<<<<<<<<<
@@ -4521,7 +4566,7 @@ static PyObject *__pyx_pf_4irpy_6lazy_property_mutable(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "irpy.pyx":161
+/* "irpy.pyx":162
  * 
  * 
  * def lazy_property_leaves(mutables=(), immutables=()):             # <<<<<<<<<<<<<<
@@ -4567,7 +4612,7 @@ static PyObject *__pyx_pw_4irpy_9lazy_property_leaves(PyObject *__pyx_self, PyOb
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "lazy_property_leaves") < 0)) __PYX_ERR(0, 161, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "lazy_property_leaves") < 0)) __PYX_ERR(0, 162, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -4582,7 +4627,7 @@ static PyObject *__pyx_pw_4irpy_9lazy_property_leaves(PyObject *__pyx_self, PyOb
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("lazy_property_leaves", 0, 0, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 161, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("lazy_property_leaves", 0, 0, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 162, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("irpy.lazy_property_leaves", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4595,7 +4640,7 @@ static PyObject *__pyx_pw_4irpy_9lazy_property_leaves(PyObject *__pyx_self, PyOb
   return __pyx_r;
 }
 
-/* "irpy.pyx":164
+/* "irpy.pyx":165
  *     "Set to properties for the __init__ method"
  * 
  *     def leaf_decorator(func):             # <<<<<<<<<<<<<<
@@ -4617,7 +4662,7 @@ static PyObject *__pyx_pw_4irpy_20lazy_property_leaves_1leaf_decorator(PyObject 
   return __pyx_r;
 }
 
-/* "irpy.pyx":165
+/* "irpy.pyx":166
  * 
  *     def leaf_decorator(func):
  *         def func_wrapper(self, *args, **kwargs):             # <<<<<<<<<<<<<<
@@ -4667,7 +4712,7 @@ static PyObject *__pyx_pw_4irpy_20lazy_property_leaves_14leaf_decorator_1func_wr
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t used_pos_args = (pos_args < 1) ? pos_args : 1;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, used_pos_args, "func_wrapper") < 0)) __PYX_ERR(0, 165, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, used_pos_args, "func_wrapper") < 0)) __PYX_ERR(0, 166, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) < 1) {
       goto __pyx_L5_argtuple_error;
@@ -4678,7 +4723,7 @@ static PyObject *__pyx_pw_4irpy_20lazy_property_leaves_14leaf_decorator_1func_wr
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("func_wrapper", 0, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 165, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("func_wrapper", 0, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 166, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_DECREF(__pyx_v_args); __pyx_v_args = 0;
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
@@ -4695,7 +4740,7 @@ static PyObject *__pyx_pw_4irpy_20lazy_property_leaves_14leaf_decorator_1func_wr
   return __pyx_r;
 }
 
-/* "irpy.pyx":169
+/* "irpy.pyx":170
  *             for node in set(immutables) | set(mutables):
  * 
  *                 def provider(self):             # <<<<<<<<<<<<<<
@@ -4728,7 +4773,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_12func_w
   __pyx_outer_scope = (struct __pyx_obj_4irpy___pyx_scope_struct_3_func_wrapper *) __Pyx_CyFunction_GetClosure(__pyx_self);
   __pyx_cur_scope = __pyx_outer_scope;
 
-  /* "irpy.pyx":170
+  /* "irpy.pyx":171
  * 
  *                 def provider(self):
  *                     return getattr(self, "_%s" % (node))             # <<<<<<<<<<<<<<
@@ -4736,17 +4781,17 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_12func_w
  *                 p = lazy_property(provider=provider,
  */
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_cur_scope->__pyx_v_node)) { __Pyx_RaiseClosureNameError("node"); __PYX_ERR(0, 170, __pyx_L1_error) }
-  __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_2, __pyx_cur_scope->__pyx_v_node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+  if (unlikely(!__pyx_cur_scope->__pyx_v_node)) { __Pyx_RaiseClosureNameError("node"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_2, __pyx_cur_scope->__pyx_v_node); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_GetAttr(__pyx_v_self, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetAttr(__pyx_v_self, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "irpy.pyx":169
+  /* "irpy.pyx":170
  *             for node in set(immutables) | set(mutables):
  * 
  *                 def provider(self):             # <<<<<<<<<<<<<<
@@ -4766,7 +4811,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_12func_w
   return __pyx_r;
 }
 
-/* "irpy.pyx":165
+/* "irpy.pyx":166
  * 
  *     def leaf_decorator(func):
  *         def func_wrapper(self, *args, **kwargs):             # <<<<<<<<<<<<<<
@@ -4798,26 +4843,26 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_func_wra
   __Pyx_INCREF(((PyObject *)__pyx_cur_scope->__pyx_outer_scope));
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_outer_scope);
 
-  /* "irpy.pyx":167
+  /* "irpy.pyx":168
  *         def func_wrapper(self, *args, **kwargs):
  * 
  *             for node in set(immutables) | set(mutables):             # <<<<<<<<<<<<<<
  * 
  *                 def provider(self):
  */
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables)) { __Pyx_RaiseClosureNameError("immutables"); __PYX_ERR(0, 167, __pyx_L1_error) }
-  __pyx_t_1 = PySet_New(__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables)) { __Pyx_RaiseClosureNameError("immutables"); __PYX_ERR(0, 168, __pyx_L1_error) }
+  __pyx_t_1 = PySet_New(__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 168, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_mutables)) { __Pyx_RaiseClosureNameError("mutables"); __PYX_ERR(0, 167, __pyx_L1_error) }
-  __pyx_t_2 = PySet_New(__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_mutables); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_mutables)) { __Pyx_RaiseClosureNameError("mutables"); __PYX_ERR(0, 168, __pyx_L1_error) }
+  __pyx_t_2 = PySet_New(__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_mutables); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 168, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyNumber_Or(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_Or(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 168, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_t_2 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 168, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 168, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   for (;;) {
     {
@@ -4826,7 +4871,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_func_wra
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 167, __pyx_L1_error)
+          else __PYX_ERR(0, 168, __pyx_L1_error)
         }
         break;
       }
@@ -4837,84 +4882,84 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_func_wra
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "irpy.pyx":169
+    /* "irpy.pyx":170
  *             for node in set(immutables) | set(mutables):
  * 
  *                 def provider(self):             # <<<<<<<<<<<<<<
  *                     return getattr(self, "_%s" % (node))
  * 
  */
-    __pyx_t_3 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_20lazy_property_leaves_14leaf_decorator_12func_wrapper_1provider, 0, __pyx_n_s_lazy_property_leaves_locals_leaf, ((PyObject*)__pyx_cur_scope), __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__5)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 169, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_20lazy_property_leaves_14leaf_decorator_12func_wrapper_1provider, 0, __pyx_n_s_lazy_property_leaves_locals_leaf, ((PyObject*)__pyx_cur_scope), __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__6)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 170, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XDECREF_SET(__pyx_v_provider, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "irpy.pyx":172
+    /* "irpy.pyx":173
  *                     return getattr(self, "_%s" % (node))
  * 
  *                 p = lazy_property(provider=provider,             # <<<<<<<<<<<<<<
  *                                   leaf_node=node,
  *                                   immutable=node in immutables)
  */
-    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_lazy_property); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_lazy_property); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_provider, __pyx_v_provider) < 0) __PYX_ERR(0, 172, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_provider, __pyx_v_provider) < 0) __PYX_ERR(0, 173, __pyx_L1_error)
 
-    /* "irpy.pyx":173
+    /* "irpy.pyx":174
  * 
  *                 p = lazy_property(provider=provider,
  *                                   leaf_node=node,             # <<<<<<<<<<<<<<
  *                                   immutable=node in immutables)
  *                 #If this ugly? Yeah... Is this an issue? I don't really know
  */
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_leaf_node, __pyx_cur_scope->__pyx_v_node) < 0) __PYX_ERR(0, 172, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_leaf_node, __pyx_cur_scope->__pyx_v_node) < 0) __PYX_ERR(0, 173, __pyx_L1_error)
 
-    /* "irpy.pyx":174
+    /* "irpy.pyx":175
  *                 p = lazy_property(provider=provider,
  *                                   leaf_node=node,
  *                                   immutable=node in immutables)             # <<<<<<<<<<<<<<
  *                 #If this ugly? Yeah... Is this an issue? I don't really know
  *                 setattr(self.__class__, node, p)
  */
-    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables)) { __Pyx_RaiseClosureNameError("immutables"); __PYX_ERR(0, 174, __pyx_L1_error) }
-    __pyx_t_5 = (__Pyx_PySequence_ContainsTF(__pyx_cur_scope->__pyx_v_node, __pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 174, __pyx_L1_error)
-    __pyx_t_6 = __Pyx_PyBool_FromLong(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 174, __pyx_L1_error)
+    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables)) { __Pyx_RaiseClosureNameError("immutables"); __PYX_ERR(0, 175, __pyx_L1_error) }
+    __pyx_t_5 = (__Pyx_PySequence_ContainsTF(__pyx_cur_scope->__pyx_v_node, __pyx_cur_scope->__pyx_outer_scope->__pyx_outer_scope->__pyx_v_immutables, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyBool_FromLong(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 175, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_immutable, __pyx_t_6) < 0) __PYX_ERR(0, 172, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_immutable, __pyx_t_6) < 0) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "irpy.pyx":172
+    /* "irpy.pyx":173
  *                     return getattr(self, "_%s" % (node))
  * 
  *                 p = lazy_property(provider=provider,             # <<<<<<<<<<<<<<
  *                                   leaf_node=node,
  *                                   immutable=node in immutables)
  */
-    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "irpy.pyx":176
+    /* "irpy.pyx":177
  *                                   immutable=node in immutables)
  *                 #If this ugly? Yeah... Is this an issue? I don't really know
  *                 setattr(self.__class__, node, p)             # <<<<<<<<<<<<<<
  * 
  *             return func(self, *args, **kwargs)
  */
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_class); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 176, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_class); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 177, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_1 = __pyx_cur_scope->__pyx_v_node;
     __Pyx_INCREF(__pyx_t_1);
-    __pyx_t_7 = PyObject_SetAttr(__pyx_t_6, __pyx_t_1, __pyx_v_p); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(0, 176, __pyx_L1_error)
+    __pyx_t_7 = PyObject_SetAttr(__pyx_t_6, __pyx_t_1, __pyx_v_p); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(0, 177, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "irpy.pyx":167
+    /* "irpy.pyx":168
  *         def func_wrapper(self, *args, **kwargs):
  * 
  *             for node in set(immutables) | set(mutables):             # <<<<<<<<<<<<<<
@@ -4924,7 +4969,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_func_wra
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "irpy.pyx":178
+  /* "irpy.pyx":179
  *                 setattr(self.__class__, node, p)
  * 
  *             return func(self, *args, **kwargs)             # <<<<<<<<<<<<<<
@@ -4932,23 +4977,23 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_func_wra
  *         return func_wrapper
  */
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_func)) { __Pyx_RaiseClosureNameError("func"); __PYX_ERR(0, 178, __pyx_L1_error) }
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_func)) { __Pyx_RaiseClosureNameError("func"); __PYX_ERR(0, 179, __pyx_L1_error) }
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 179, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_self);
   __Pyx_GIVEREF(__pyx_v_self);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_self);
-  __pyx_t_1 = PyNumber_Add(__pyx_t_2, __pyx_v_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Add(__pyx_t_2, __pyx_v_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 179, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_func, __pyx_t_1, __pyx_v_kwargs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_func, __pyx_t_1, __pyx_v_kwargs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 179, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "irpy.pyx":165
+  /* "irpy.pyx":166
  * 
  *     def leaf_decorator(func):
  *         def func_wrapper(self, *args, **kwargs):             # <<<<<<<<<<<<<<
@@ -4973,7 +5018,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_14leaf_decorator_func_wra
   return __pyx_r;
 }
 
-/* "irpy.pyx":164
+/* "irpy.pyx":165
  *     "Set to properties for the __init__ method"
  * 
  *     def leaf_decorator(func):             # <<<<<<<<<<<<<<
@@ -5001,19 +5046,19 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_leaf_decorator(PyObject *
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_func);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_func);
 
-  /* "irpy.pyx":165
+  /* "irpy.pyx":166
  * 
  *     def leaf_decorator(func):
  *         def func_wrapper(self, *args, **kwargs):             # <<<<<<<<<<<<<<
  * 
  *             for node in set(immutables) | set(mutables):
  */
-  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_20lazy_property_leaves_14leaf_decorator_1func_wrapper, 0, __pyx_n_s_lazy_property_leaves_locals_leaf_2, ((PyObject*)__pyx_cur_scope), __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__7)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_20lazy_property_leaves_14leaf_decorator_1func_wrapper, 0, __pyx_n_s_lazy_property_leaves_locals_leaf_2, ((PyObject*)__pyx_cur_scope), __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 166, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_func_wrapper = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "irpy.pyx":180
+  /* "irpy.pyx":181
  *             return func(self, *args, **kwargs)
  * 
  *         return func_wrapper             # <<<<<<<<<<<<<<
@@ -5025,7 +5070,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_leaf_decorator(PyObject *
   __pyx_r = __pyx_v_func_wrapper;
   goto __pyx_L0;
 
-  /* "irpy.pyx":164
+  /* "irpy.pyx":165
  *     "Set to properties for the __init__ method"
  * 
  *     def leaf_decorator(func):             # <<<<<<<<<<<<<<
@@ -5046,7 +5091,7 @@ static PyObject *__pyx_pf_4irpy_20lazy_property_leaves_leaf_decorator(PyObject *
   return __pyx_r;
 }
 
-/* "irpy.pyx":161
+/* "irpy.pyx":162
  * 
  * 
  * def lazy_property_leaves(mutables=(), immutables=()):             # <<<<<<<<<<<<<<
@@ -5074,19 +5119,19 @@ static PyObject *__pyx_pf_4irpy_8lazy_property_leaves(CYTHON_UNUSED PyObject *__
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_immutables);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_immutables);
 
-  /* "irpy.pyx":164
+  /* "irpy.pyx":165
  *     "Set to properties for the __init__ method"
  * 
  *     def leaf_decorator(func):             # <<<<<<<<<<<<<<
  *         def func_wrapper(self, *args, **kwargs):
  * 
  */
-  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_20lazy_property_leaves_1leaf_decorator, 0, __pyx_n_s_lazy_property_leaves_locals_leaf_3, ((PyObject*)__pyx_cur_scope), __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_20lazy_property_leaves_1leaf_decorator, 0, __pyx_n_s_lazy_property_leaves_locals_leaf_3, ((PyObject*)__pyx_cur_scope), __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__10)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_leaf_decorator = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "irpy.pyx":182
+  /* "irpy.pyx":183
  *         return func_wrapper
  * 
  *     return leaf_decorator             # <<<<<<<<<<<<<<
@@ -5096,7 +5141,7 @@ static PyObject *__pyx_pf_4irpy_8lazy_property_leaves(CYTHON_UNUSED PyObject *__
   __pyx_r = __pyx_v_leaf_decorator;
   goto __pyx_L0;
 
-  /* "irpy.pyx":161
+  /* "irpy.pyx":162
  * 
  * 
  * def lazy_property_leaves(mutables=(), immutables=()):             # <<<<<<<<<<<<<<
@@ -5588,7 +5633,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_AttributeError, __pyx_k_AttributeError, sizeof(__pyx_k_AttributeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Immutable_Node_0, __pyx_k_Immutable_Node_0, sizeof(__pyx_k_Immutable_Node_0), 0, 0, 1, 0},
   {&__pyx_kp_s_My_little_Property_My_little_Pr, __pyx_k_My_little_Property_My_little_Pr, sizeof(__pyx_k_My_little_Property_My_little_Pr), 0, 0, 1, 0},
-  {&__pyx_kp_s_Node_is_incoherent_0, __pyx_k_Node_is_incoherent_0, sizeof(__pyx_k_Node_is_incoherent_0), 0, 0, 1, 0},
+  {&__pyx_kp_s_Node_0_have_been_removed_from_th, __pyx_k_Node_0_have_been_removed_from_th, sizeof(__pyx_k_Node_0_have_been_removed_from_th), 0, 0, 1, 0},
+  {&__pyx_kp_s__4, __pyx_k__4, sizeof(__pyx_k__4), 0, 0, 1, 0},
   {&__pyx_n_s_add, __pyx_k_add, sizeof(__pyx_k_add), 0, 0, 1, 1},
   {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
   {&__pyx_n_s_appendattr, __pyx_k_appendattr, sizeof(__pyx_k_appendattr), 0, 0, 1, 1},
@@ -5611,6 +5657,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_genealogy_locals_sap, __pyx_k_genealogy_locals_sap, sizeof(__pyx_k_genealogy_locals_sap), 0, 0, 1, 1},
   {&__pyx_n_s_get, __pyx_k_get, sizeof(__pyx_k_get), 0, 0, 1, 1},
   {&__pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_k_home_razoa_Project_p16_2_IRPy_l, sizeof(__pyx_k_home_razoa_Project_p16_2_IRPy_l), 0, 0, 1, 0},
+  {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_immutable, __pyx_k_immutable, sizeof(__pyx_k_immutable), 0, 0, 1, 1},
   {&__pyx_n_s_immutables, __pyx_k_immutables, sizeof(__pyx_k_immutables), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
@@ -5619,6 +5666,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_incoherent_child, __pyx_k_incoherent_child, sizeof(__pyx_k_incoherent_child), 0, 0, 1, 1},
   {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
   {&__pyx_n_s_irpy, __pyx_k_irpy, sizeof(__pyx_k_irpy), 0, 0, 1, 1},
+  {&__pyx_n_s_join, __pyx_k_join, sizeof(__pyx_k_join), 0, 0, 1, 1},
   {&__pyx_n_s_kwargs, __pyx_k_kwargs, sizeof(__pyx_k_kwargs), 0, 0, 1, 1},
   {&__pyx_n_s_lambda, __pyx_k_lambda, sizeof(__pyx_k_lambda), 0, 0, 1, 1},
   {&__pyx_n_s_lazy_property, __pyx_k_lazy_property, sizeof(__pyx_k_lazy_property), 0, 0, 1, 1},
@@ -5635,6 +5683,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
   {&__pyx_n_s_module, __pyx_k_module, sizeof(__pyx_k_module), 0, 0, 1, 1},
+  {&__pyx_n_s_msg, __pyx_k_msg, sizeof(__pyx_k_msg), 0, 0, 1, 1},
   {&__pyx_n_s_mutables, __pyx_k_mutables, sizeof(__pyx_k_mutables), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 0, 1, 1},
@@ -5694,41 +5743,41 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "irpy.pyx":169
+  /* "irpy.pyx":170
  *             for node in set(immutables) | set(mutables):
  * 
  *                 def provider(self):             # <<<<<<<<<<<<<<
  *                     return getattr(self, "_%s" % (node))
  * 
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 169, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_provider, 169, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 169, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_provider, 170, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 170, __pyx_L1_error)
 
-  /* "irpy.pyx":165
+  /* "irpy.pyx":166
  * 
  *     def leaf_decorator(func):
  *         def func_wrapper(self, *args, **kwargs):             # <<<<<<<<<<<<<<
  * 
  *             for node in set(immutables) | set(mutables):
  */
-  __pyx_tuple__6 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_args, __pyx_n_s_kwargs, __pyx_n_s_node_2, __pyx_n_s_provider, __pyx_n_s_provider, __pyx_n_s_p); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 165, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(1, 0, 7, 0, CO_VARARGS|CO_VARKEYWORDS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_func_wrapper, 165, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __pyx_tuple__7 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_args, __pyx_n_s_kwargs, __pyx_n_s_node_2, __pyx_n_s_provider, __pyx_n_s_provider, __pyx_n_s_p); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 166, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(1, 0, 7, 0, CO_VARARGS|CO_VARKEYWORDS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_func_wrapper, 166, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 166, __pyx_L1_error)
 
-  /* "irpy.pyx":164
+  /* "irpy.pyx":165
  *     "Set to properties for the __init__ method"
  * 
  *     def leaf_decorator(func):             # <<<<<<<<<<<<<<
  *         def func_wrapper(self, *args, **kwargs):
  * 
  */
-  __pyx_tuple__8 = PyTuple_Pack(3, __pyx_n_s_func, __pyx_n_s_func_wrapper, __pyx_n_s_func_wrapper); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 164, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(1, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_leaf_decorator, 164, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 164, __pyx_L1_error)
+  __pyx_tuple__9 = PyTuple_Pack(3, __pyx_n_s_func, __pyx_n_s_func_wrapper, __pyx_n_s_func_wrapper); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__9, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_leaf_decorator, 165, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 165, __pyx_L1_error)
 
   /* "irpy.pyx":8
  * d_last_caller = defaultdict(lambda: None)
@@ -5737,10 +5786,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     """Return the genealogy of a _node.
  *        Direction is $parents or $children, recurse accordingly"""
  */
-  __pyx_tuple__10 = PyTuple_Pack(7, __pyx_n_s_obj, __pyx_n_s_node, __pyx_n_s_direction, __pyx_n_s_inclusif, __pyx_n_s_sap, __pyx_n_s_sap, __pyx_n_s_s); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 8, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
-  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(4, 0, 7, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_genealogy, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(7, __pyx_n_s_obj, __pyx_n_s_node, __pyx_n_s_direction, __pyx_n_s_inclusif, __pyx_n_s_sap, __pyx_n_s_sap, __pyx_n_s_s); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
+  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(4, 0, 7, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_genealogy, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 8, __pyx_L1_error)
 
   /* "irpy.pyx":34
  * 
@@ -5749,10 +5798,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     try:
  *         s = getattr(obj, name)
  */
-  __pyx_tuple__12 = PyTuple_Pack(4, __pyx_n_s_obj, __pyx_n_s_name, __pyx_n_s_value, __pyx_n_s_s); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 34, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__12);
-  __Pyx_GIVEREF(__pyx_tuple__12);
-  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(3, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_appendattr, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(4, __pyx_n_s_obj, __pyx_n_s_name, __pyx_n_s_value, __pyx_n_s_s); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(3, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_appendattr, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(0, 34, __pyx_L1_error)
 
   /* "irpy.pyx":43
  * 
@@ -5761,10 +5810,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     """_node have changed, is now coherent. Reflect this fact on is sibling"""
  *     visited = set()
  */
-  __pyx_tuple__14 = PyTuple_Pack(7, __pyx_n_s_obj, __pyx_n_s_node, __pyx_n_s_visited, __pyx_n_s_sibling, __pyx_n_s_child, __pyx_n_s_incoherent_child, __pyx_n_s_s); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 43, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
-  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(2, 0, 7, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_sibling_coherence, 43, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_tuple__15 = PyTuple_Pack(7, __pyx_n_s_obj, __pyx_n_s_node, __pyx_n_s_visited, __pyx_n_s_sibling, __pyx_n_s_child, __pyx_n_s_incoherent_child, __pyx_n_s_s); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(2, 0, 7, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_sibling_coherence, 43, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(0, 43, __pyx_L1_error)
 
   /* "irpy.pyx":72
  *     """
@@ -5773,13 +5822,13 @@ static int __Pyx_InitCachedConstants(void) {
  *         """Provider: If a function who will be used to compute the node
  *            leaf_node: If the name of the node
  */
-  __pyx_tuple__16 = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_provider, __pyx_n_s_leaf_node, __pyx_n_s_immutable, __pyx_n_s_node_2); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 72, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
-  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(4, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_init, 72, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 72, __pyx_L1_error)
-  __pyx_tuple__18 = PyTuple_Pack(2, ((PyObject *)Py_None), ((PyObject *)Py_True)); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 72, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__17 = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_provider, __pyx_n_s_leaf_node, __pyx_n_s_immutable, __pyx_n_s_node_2); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(4, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_init, 72, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_tuple__19 = PyTuple_Pack(2, ((PyObject *)Py_None), ((PyObject *)Py_True)); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
 
   /* "irpy.pyx":89
  *         self.incoherent = "_%s_incoherent" % (node)
@@ -5788,46 +5837,46 @@ static int __Pyx_InitCachedConstants(void) {
  *         "Get the value of the node and handle the genealogy"
  *         _caller = d_path[obj][-1]
  */
-  __pyx_tuple__19 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_obj, __pyx_n_s_objtype, __pyx_n_s_caller, __pyx_n_s_node, __pyx_n_s_value); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 89, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(3, 0, 6, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_get, 89, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 89, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(8, __pyx_n_s_self, __pyx_n_s_obj, __pyx_n_s_objtype, __pyx_n_s_caller, __pyx_n_s_node, __pyx_n_s_value, __pyx_n_s_i, __pyx_n_s_msg); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 89, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_codeobj__21 = (PyObject*)__Pyx_PyCode_New(3, 0, 8, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_get, 89, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__21)) __PYX_ERR(0, 89, __pyx_L1_error)
 
-  /* "irpy.pyx":119
+  /* "irpy.pyx":120
  *         return value
  * 
  *     def __set__(self, obj, value):             # <<<<<<<<<<<<<<
  *         """Set the value of the node
  *         But wait, leaves are "gradual typed" variable! Youpi!
  */
-  __pyx_tuple__21 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_obj, __pyx_n_s_value, __pyx_n_s_node, __pyx_n_s_cur_value, __pyx_n_s_parent, __pyx_n_s_child); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 119, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(3, 0, 7, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_set, 119, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_obj, __pyx_n_s_value, __pyx_n_s_node, __pyx_n_s_cur_value, __pyx_n_s_parent, __pyx_n_s_child); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 120, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_codeobj__23 = (PyObject*)__Pyx_PyCode_New(3, 0, 7, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_set, 120, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__23)) __PYX_ERR(0, 120, __pyx_L1_error)
 
-  /* "irpy.pyx":156
+  /* "irpy.pyx":157
  * 
  * 
  * def lazy_property_mutable(provider):             # <<<<<<<<<<<<<<
  *     "Return a lazy_property mutable"
  *     return lazy_property(provider=provider, immutable=False)
  */
-  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_n_s_provider); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 156, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__23);
-  __Pyx_GIVEREF(__pyx_tuple__23);
-  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_lazy_property_mutable, 156, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_n_s_provider); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
+  __pyx_codeobj__25 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_lazy_property_mutable, 157, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__25)) __PYX_ERR(0, 157, __pyx_L1_error)
 
-  /* "irpy.pyx":161
+  /* "irpy.pyx":162
  * 
  * 
  * def lazy_property_leaves(mutables=(), immutables=()):             # <<<<<<<<<<<<<<
  *     "Set to properties for the __init__ method"
  * 
  */
-  __pyx_tuple__25 = PyTuple_Pack(4, __pyx_n_s_mutables, __pyx_n_s_immutables, __pyx_n_s_leaf_decorator, __pyx_n_s_leaf_decorator); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 161, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_lazy_property_leaves, 161, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __pyx_tuple__26 = PyTuple_Pack(4, __pyx_n_s_mutables, __pyx_n_s_immutables, __pyx_n_s_leaf_decorator, __pyx_n_s_leaf_decorator); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 162, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__26);
+  __Pyx_GIVEREF(__pyx_tuple__26);
+  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_razoa_Project_p16_2_IRPy_l, __pyx_n_s_lazy_property_leaves, 162, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 162, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5934,13 +5983,13 @@ PyMODINIT_FUNC PyInit_irpy(void)
   if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct__genealogy) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
   __pyx_type_4irpy___pyx_scope_struct__genealogy.tp_print = 0;
   __pyx_ptype_4irpy___pyx_scope_struct__genealogy = &__pyx_type_4irpy___pyx_scope_struct__genealogy;
-  if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct_1_lazy_property_leaves) < 0) __PYX_ERR(0, 161, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct_1_lazy_property_leaves) < 0) __PYX_ERR(0, 162, __pyx_L1_error)
   __pyx_type_4irpy___pyx_scope_struct_1_lazy_property_leaves.tp_print = 0;
   __pyx_ptype_4irpy___pyx_scope_struct_1_lazy_property_leaves = &__pyx_type_4irpy___pyx_scope_struct_1_lazy_property_leaves;
-  if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct_2_leaf_decorator) < 0) __PYX_ERR(0, 164, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct_2_leaf_decorator) < 0) __PYX_ERR(0, 165, __pyx_L1_error)
   __pyx_type_4irpy___pyx_scope_struct_2_leaf_decorator.tp_print = 0;
   __pyx_ptype_4irpy___pyx_scope_struct_2_leaf_decorator = &__pyx_type_4irpy___pyx_scope_struct_2_leaf_decorator;
-  if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct_3_func_wrapper) < 0) __PYX_ERR(0, 165, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_4irpy___pyx_scope_struct_3_func_wrapper) < 0) __PYX_ERR(0, 166, __pyx_L1_error)
   __pyx_type_4irpy___pyx_scope_struct_3_func_wrapper.tp_print = 0;
   __pyx_ptype_4irpy___pyx_scope_struct_3_func_wrapper = &__pyx_type_4irpy___pyx_scope_struct_3_func_wrapper;
   /*--- Type import code ---*/
@@ -6111,9 +6160,9 @@ PyMODINIT_FUNC PyInit_irpy(void)
  *         """Provider: If a function who will be used to compute the node
  *            leaf_node: If the name of the node
  */
-  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_13lazy_property_1__init__, 0, __pyx_n_s_lazy_property___init, NULL, __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__17)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_13lazy_property_1__init__, 0, __pyx_n_s_lazy_property___init, NULL, __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__18)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_5, __pyx_tuple__18);
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_5, __pyx_tuple__19);
   if (PyObject_SetItem(__pyx_t_4, __pyx_n_s_init, __pyx_t_5) < 0) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
@@ -6124,21 +6173,21 @@ PyMODINIT_FUNC PyInit_irpy(void)
  *         "Get the value of the node and handle the genealogy"
  *         _caller = d_path[obj][-1]
  */
-  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_13lazy_property_3__get__, 0, __pyx_n_s_lazy_property___get, NULL, __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__20)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 89, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_13lazy_property_3__get__, 0, __pyx_n_s_lazy_property___get, NULL, __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__21)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyObject_SetItem(__pyx_t_4, __pyx_n_s_get, __pyx_t_5) < 0) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "irpy.pyx":119
+  /* "irpy.pyx":120
  *         return value
  * 
  *     def __set__(self, obj, value):             # <<<<<<<<<<<<<<
  *         """Set the value of the node
  *         But wait, leaves are "gradual typed" variable! Youpi!
  */
-  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_13lazy_property_5__set__, 0, __pyx_n_s_lazy_property___set, NULL, __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__22)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4irpy_13lazy_property_5__set__, 0, __pyx_n_s_lazy_property___set, NULL, __pyx_n_s_irpy, __pyx_d, ((PyObject *)__pyx_codeobj__23)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 120, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyObject_SetItem(__pyx_t_4, __pyx_n_s_set, __pyx_t_5) < 0) __PYX_ERR(0, 119, __pyx_L1_error)
+  if (PyObject_SetItem(__pyx_t_4, __pyx_n_s_set, __pyx_t_5) < 0) __PYX_ERR(0, 120, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "irpy.pyx":65
@@ -6156,28 +6205,28 @@ PyMODINIT_FUNC PyInit_irpy(void)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "irpy.pyx":156
+  /* "irpy.pyx":157
  * 
  * 
  * def lazy_property_mutable(provider):             # <<<<<<<<<<<<<<
  *     "Return a lazy_property mutable"
  *     return lazy_property(provider=provider, immutable=False)
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_4irpy_7lazy_property_mutable, NULL, __pyx_n_s_irpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_4irpy_7lazy_property_mutable, NULL, __pyx_n_s_irpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_lazy_property_mutable, __pyx_t_2) < 0) __PYX_ERR(0, 156, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_lazy_property_mutable, __pyx_t_2) < 0) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "irpy.pyx":161
+  /* "irpy.pyx":162
  * 
  * 
  * def lazy_property_leaves(mutables=(), immutables=()):             # <<<<<<<<<<<<<<
  *     "Set to properties for the __init__ method"
  * 
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_4irpy_9lazy_property_leaves, NULL, __pyx_n_s_irpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_4irpy_9lazy_property_leaves, NULL, __pyx_n_s_irpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 162, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_lazy_property_leaves, __pyx_t_2) < 0) __PYX_ERR(0, 161, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_lazy_property_leaves, __pyx_t_2) < 0) __PYX_ERR(0, 162, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "irpy.pyx":1
@@ -7287,6 +7336,13 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
 #endif
     return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
 }
+
+/* StringJoin */
+          #if !CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyBytes_Join(PyObject* sep, PyObject* values) {
+    return PyObject_CallMethodObjArgs(sep, __pyx_n_s_join, values, NULL);
+}
+#endif
 
 /* PyErrFetchRestore */
           #if CYTHON_COMPILING_IN_CPYTHON

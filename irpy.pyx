@@ -103,7 +103,7 @@ class lazy_property(object):
         except AttributeError:
 
             try:
-                getattr(obj, self.incoherent)
+                i = getattr(obj, self.incoherent)
             except AttributeError:
                 d_path[obj].append(_node)
 
@@ -112,7 +112,8 @@ class lazy_property(object):
 
                 d_path[obj].pop()
             else:
-                raise AttributeError, "Node is incoherent {0}".format(_node)
+                msg = "Node {0} have been removed from the tree by {1}"
+                raise AttributeError, msg.format(_node," ".join(i))
 
         return value
 
