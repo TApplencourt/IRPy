@@ -4,7 +4,7 @@
 
 
 IRPy (pronounce /kəˈθuːluː/) extend the python `property` function in order to support lazy evaluation and mutability of nested properties (`property` that use `properties` in their declaration and so forth).
-Lazy evaluation of properties are quite common ([Werkzeug](http://werkzeug.pocoo.org/docs/0.11/utils/#werkzeug.utils.cached_property) for example),
+Lazy evaluation of properties are quite common ([Werkzeug](https://werkzeug.pocoo.org/docs/0.11/utils/#werkzeug.utils.cached_property), [cached-property](https://github.com/pydanny/cached-property)...),
 but coherence problems can arise if you have inference rule between mutable properties. The aim of this library is to solve this problem.
 
 
@@ -17,7 +17,7 @@ pip install irpy
 ```
 conda install -c https://conda.anaconda.org/tapplencourt irpy
 ```
-- Or you can manually add [irpy.py](https://raw.githubusercontent.com/TApplencourt/IRPy/master/irpy.py) to `PYTHONPATH` 
+- You can download [irpy.pyx](https://raw.githubusercontent.com/TApplencourt/IRPy/master/irpyx.py) rename it into `irpy.py` and add it to `PYTHONPATH`.
 
 ##API
 - `lazy_property`: a simple lazy property;
@@ -35,165 +35,100 @@ A program can be represented as a production tree where
 - The nodes are the intermediate variables;
 - The edges represent the relation needs/needed by.
 
-In python, this way of thinking is encouraged by the usage of, special object, `property`. Indeed each `property` are one nodes of the production tree, and by nested then you define the edges. 
+In python, this way of thinking is encouraged by the usage of, special object, `property`. Indeed each `property` are one nodes of the production tree. When you neste then, you define implicitly the edges. 
 
-For example:
+### Ilustration
+
+This code sniplet:
 ```python
-class NotTrivialFunction(object):
-    '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
-    where:
-        t(x,y) = x + y + 4
-        u(x,y) = x + y + 1
-        v(x,y) = x + y + 2
-        w(x)   = x + 3
-    and d1, d2, d3, d3, d5 are the parameters'''
+class WeightFactory(object):
+    '''Compute the weight of a rectangle'''
 
-    def __init__(self, d1, d2, d3, d4, d5):
-        self.d1 = d1
-        self.d2 = d2
-        self.d3 = d3
-        self.d4 = d4
-        self.d5 = d5
+    def __init__(self, l1, l2, l3):
+        '''Dimension of the box (m)'''
+        self.l1 = l1
+        self.l2 = l2
+        self.l3 = l3
 
-    @properpty
-    def t(self):
-        return self.u1 + self.v + 4
+    @property
+    def volume(self):
+        " V = l1 * l2 * l3"
+        return self.l1 * self.l2 * self.l3 
 
-    @properpty
-    def u1(self):
-        return self.fu(self.d1, self.d2)
+    @property
+    def density(self):
+        "Volumetric mass density of Iron (kg/m^3)"
+        return 7.87 * 10**3
 
-    @properpty
-    def v(self):
-        return self.u2 + self.w + 2
+    @property
+    def mass(self):
+        "m = V * d"
+        return self.volume * self.density
 
-    @properpty
-    def u2(self):
-        return self.fu(self.d3, self.d4)
+    @property
+    def g(self):
+        "g-force (m/s2) in equator"
+        return 9.7803
 
-    @properpty
-    def w(self):
-        return self.d5 + 3
-
-    def fu(self, x, y):
-        return x + y + 1
-
+    @property
+    def weight(self):
+        "In Newton"
+        return self.mass*self.g
 ```
+can be represend as:
 
-In this example `d[1,5]`,`u[1,2]`,`v`,`w`,`t` are the node of the production tree. One can see that these properties have no explicit parameter 
+![](https://cdn.rawgit.com/TApplencourt/IRPy/master/exemples/weight.svg)
+
+In this example `l[1,3]`, `volume`, `density`, `mass`, `g`, `weight` are the node of the production tree. 
+
+### Remarks
+
+In the source code, one can see that properties have no explicit parameter 
 (in fact, IRPy mean [**I**mplicit **R**eference **P**arameter](http://osp.chickenkiller.com/mediawiki/index.php?title=IRP) for P**y**thon).
 
 This simplify dramatically simplify program development. Indeed:
 - The global production tree is not known by the programmer, the programmer doesn’t handle the execution sequence. Just ask a property, it will be computed on the fly:
 ```python
-f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10, d=7)
-assert (f.t == 42)
+f = WeightFactory(1,1,1)
+assert ( abs(f.weight - 76970.961) < 1.e-4)
 ```
 - The program is easy to write (adding a new `property` only require to know about the name of theses implicit parameters);
-- Any change of dependencies will be handled properly automatically.
 
-But, the same data will be recomputed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just use the `property_lazy` decorator for doing so 
-(all these example can be found in the [example](https://github.com/TApplencourt/IRPy/blob/master/exemple.py) file).
+### Lazy evalution
 
-```python
-class NotTrivialFunction(object):
-    '''Compute : t(u(d1,d2),v(d3,d4),w(d5))
-    where:
-        t(x,y) = x + y + 4
-        u(x,y) = x + y + 1
-        v(x,y) = x + y + 2
-        w(x)   = x + 3
-    and d1, d2, d3, d3, d5 are the parameters'''
+But, the same data will be recomputed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just replace `property` into `lazy_property` and you are good to go.
+(all these example can be found in the [example](https://github.com/TApplencourt/IRPy/blob/master/exemples) folder).
 
-    @lazy_property_leaves(immutables="d1 d2 d3 d4 d5".split())
-    def __init__(self, d1, d2, d3, d4, d5):
-        self.d1 = d1
-        self.d2 = d2
-        self.d3 = d3
-        self.d4 = d4
-        self.d5 = d5
+### Draw back
 
-    @lazy_property
-    def t(self):
-        return self.u1 + self.v + 4
+In this IRP paradigm, lazy properties russian dolls, as in `irppy.py` nodes are by default immutable. 
+This mean that you cannot set these node by hand; the only way to compute a node is by using the function who have be decorated. 
 
-    @lazy_property
-    def u1(self):
-        return self.fu(self.d1, self.d2)
-
-    @lazy_property
-    def v(self):
-        return self.u2 + self.w + 2
-
-    @lazy_property
-    def u2(self):
-        return self.fu(self.d3, self.d4)
-
-    @lazy_property
-    def w(self):
-        return self.d5 + 3
-
-    def fu(self, x, y):
-        return x + y + 1
-```
-Now when you, or the interpretor, ask for a node who have already be computed, we just return the saved value. 
-In this exemple:
-```python
-f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10, d=7)
-assert (f.u2 == 19)
-assert (f.t == 42)
-```
-calling `u2`, before or after asking `t`, do not cause any overhead.
-
-
-In this IRP paradigm as in `irppy.py` nodes are by default immutable. This mean that you cannot set these node by hand; the only way to compute a node is by using the function who have be decorated. 
 For example:
-
 ```python
-f = NotTrivialFunction(d1=1, d2=5, d3=8, d4=10,d5=7)
-f.u1 = 2
-```
-Will raise an error.
-
-
-##Tricky part: Mutability
-
-In the precedent example, all the node of the production tree are immutable. In a real world application this a quite a limitation.
-For example, in an iterative resolution procedure of an equation (e.g. the **Newton-Raphson** one), we need to compute node (f(x) and f'(x)), change them (x <- x - f(x)/f'(x) ) and so forth. 
-All the ancestor of the node who are changed need to be recomputed accordingly. In other word, when are changing the value of x, f(x) and f'(x) need to be recomputed.
-
-This is the essential innovation of IRPy. Use the`lazy_property_mutable` and the `lazy_property_leavs(mutables)` functions too define theses mutable nodes.
-
-Lets use these decorators to write a simple Newton-Raphson algorithm to solve cos x - x = 0.
-```python
-class NewtonRaphson(object):
-    '''Solve cos x - x = 0 by Newton Rapshon's algorithm'''
-
-    @irp_leaves_mutables("x")
-    def __init__(self,x):
-        self.x = x        
-
-    @irp_node_mutable
-    def f(self):
-        return cos(self.x) - self.x
-
-    @irp_node_mutable
-    def fprime(self):
-        return -sin(self.x) - 1
-
-    @irp_node_mutable
-    def x_next(self):
-        return self.x - self.f / self.fprime
-
-    def solve(self):
-        while abs(self.x - self.x_next) > 1.e-9:
-            self.x = self.x_next
+f = WeightFactory(1,1,1)
+try:
+    f.g = 1.622
+except AttributeError:
+    print "Node are immutable!"
 ```
 
-See how in the `solve` function, when we modify `x` it change the value of `x_next(x,f(x),f'(x))` accordingly. At anytime, any where you can be sure that all your production tree are in valid state!
+## Mutability
 
-```python
-F = NewtonRaphson(x=1)
-F.solve()
-assert (abs(F.x - 0.739085133) < 1.e-9)
+In `IRPy`, the node who can be changed by hand are decorated with the `lazy_property_mutable` function. 
+```
+@lazy_property_mutable
+def g(self):
+    "g-force (m/s2) in equator"
+    return 9.7803
+```
+
+### Ancestor are invalided
+When this kind of node node (for exemple `g`) are set, all her [ancestors](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminologies_used_in_Trees) (`wieght` in your case) will be recomputed the nest time somebdy ask for them.
+
+```
+f = WeightFactory(1,1,1)
+assert ( abs(f.weight - 76970.961) < 1.e-4)
+f.g = 1.622
+assert ( abs(f.weight - 12765.14) < 1.e-4)
 ```
