@@ -116,7 +116,7 @@ except AttributeError:
 ## Mutability
 
 In `IRPy`, the node who can be changed by hand are decorated with the `lazy_property_mutable` function. 
-```
+```python
 @lazy_property_mutable
 def g(self):
     "g-force (m/s2) in equator"
@@ -126,7 +126,7 @@ def g(self):
 ### Ancestor are invalided
 When this kind of node node (for exemple `g`) are set, all her [ancestors](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminologies_used_in_Trees) (`wieght` in your case) will be recomputed the nest time somebdy ask for them.
 
-```
+```python
 f = WeightFactory(1,1,1)
 assert ( abs(f.weight - 76970.961) < 1.e-4)
 f.g = 1.622
