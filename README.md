@@ -35,11 +35,11 @@ A program can be represented as a production tree where
 - The nodes are the intermediate variables;
 - The edges represent the relation needs/needed by.
 
-In python, this way of thinking is encouraged by the usage of, special object, `property`. Indeed each `property` are one nodes of the production tree. When you neste then, you define implicitly the edges. 
+In python, this way of thinking is encouraged by the usage of, special object, `property`. Indeed each `property` are one nodes of the production tree. When you nest them, you define implicitly the edges of this tree. 
 
-### Ilustration
+### Illustration
 
-This code sniplet:
+This code snippet:
 ```python
 class WeightFactory(object):
     '''Compute the weight of a rectangle'''
@@ -83,10 +83,10 @@ In this example `l[1,3]`, `volume`, `density`, `mass`, `g`, `weight` are the nod
 
 ### Remarks
 
-In the source code, one can see that properties have no explicit parameter 
+In the source code of the snipper, one can see that properties have no explicit parameter 
 (in fact, IRPy mean [**I**mplicit **R**eference **P**arameter](http://osp.chickenkiller.com/mediawiki/index.php?title=IRP) for P**y**thon).
 
-This simplify dramatically simplify program development. Indeed:
+And this simplify dramatically sotfware developments. Indeed:
 - The global production tree is not known by the programmer, the programmer doesn’t handle the execution sequence. Just ask a property, it will be computed on the fly:
 ```python
 f = WeightFactory(1,1,1)
@@ -94,14 +94,14 @@ assert ( abs(f.weight - 76970.961) < 1.e-4)
 ```
 - The program is easy to write (adding a new `property` only require to know about the name of theses implicit parameters);
 
-### Lazy evalution
+### Lazy evaluation
 
 But, the same data will be recomputed multiple times. A simple solution is to use lazy evaluation of these nodes/properties. Just replace `property` into `lazy_property` and you are good to go.
-(all these example can be found in the [example](https://github.com/TApplencourt/IRPy/blob/master/exemples) folder).
+(all these example can be found in the [examples](https://github.com/TApplencourt/IRPy/blob/master/examples) folder).
 
 ### Draw back
 
-In this IRP paradigm, lazy properties russian dolls, as in `irppy.py` nodes are by default immutable. 
+In IRP paradigm, a Russian nesting lazy property, nodes are by default immutable. 
 This mean that you cannot set these node by hand; the only way to compute a node is by using the function who have be decorated. 
 
 For example:
@@ -124,7 +124,7 @@ def g(self):
 ```
 
 ### Ancestor are invalided
-When this kind of node node (for exemple `g`) are set, all her [ancestors](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminologies_used_in_Trees) (`wieght` in your case) will be recomputed the nest time somebdy ask for them.
+When this kind of node node (for example `g`) are set, all her [ancestors](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminologies_used_in_Trees) (`wieght` in your case) will be recomputed the nest time somebody ask for them.
 
 ```python
 f = WeightFactory(1,1,1)
@@ -134,7 +134,7 @@ assert ( abs(f.weight - 12765.14) < 1.e-4)
 ```
 ### Descendant are removed from the tree
 
-Is we change an node (the `mass` for example), all is descedants are removed from the tree and are, for now, unreacheable.
+Is we change an node (the `mass` for example), all her  descendants are removed from the tree and are, for now, unreachable.
 
 ```python
 f = WeightFactory(1,1,1)
