@@ -3,8 +3,8 @@ import irpy
 class WeightFactory(object):
     '''Compute the weight of a rectangle'''
 
-    @irpy.lazy_property_leaves(immutables="l1 l2 l3".split())
-    def __init__(self, l, w, f):
+    @irpy.lazy_property_leaves(immutables="l w h".split())
+    def __init__(self, l, w, h):
         '''Dimension of the box (m)'''
         self.l = l
         self.w = w
