@@ -4,16 +4,16 @@ class WeightFactory(object):
     '''Compute the weight of a rectangle'''
 
     @irpy.lazy_property_leaves(immutables="l1 l2 l3".split())
-    def __init__(self, l1, l2, l3):
+    def __init__(self, l, w, f):
         '''Dimension of the box (m)'''
-        self.l1 = l1
-        self.l2 = l2
-        self.l3 = l3
+        self.l = l
+        self.w = w
+        self.h = h
 
     @irpy.lazy_property_mutable
     def volume(self):
-        " V = l1 * l2 * l3"
-        return self.l1 * self.l2 * self.l3 
+        " V = l * w * h"
+        return self.l * self.w * self.h 
 
     @irpy.lazy_property_mutable
     def density(self):
