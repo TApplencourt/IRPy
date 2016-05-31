@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from collections import defaultdict
+import uuid
 
 #Handle your execution stack
 d_path = defaultdict(lambda: [None])
@@ -79,10 +80,11 @@ class lazy_property(object):
         self.immutable = immutable
 
         if not self.leaf_node:
-            node = provider.__name__
+            self.name = provider.__name__
         else:
-            node = self.leaf_node
+            self.name = self.leaf_node
 
+        node = id(provider)
         self._node = "_%s" % (node)
         self.incoherent = "_%s_incoherent" % (node)
 
@@ -113,7 +115,7 @@ class lazy_property(object):
                 d_path[obj].pop()
             else:
                 msg = "Node {0} have been removed from the tree by {1}"
-                raise AttributeError, msg.format(_node," ".join(i))
+                raise AttributeError, msg.format(self.name," ".join(i))
 
         return value
 
@@ -129,7 +131,7 @@ class lazy_property(object):
             if self.leaf_node:
                 self.leaf_node = False
             else:
-                raise AttributeError, "Immutable Node {0}".format(_node)
+                raise AttributeError, "Immutable Node {0}".format(self.name)
 
         try:
             cur_value = getattr(obj, _node)
