@@ -77,7 +77,7 @@ class WeightFactory(object):
 ```
 can be represend as:
 
-![](https://cdn.rawgit.com/TApplencourt/IRPy/master/exemples/weight.svg)
+![](https://cdn.rawgit.com/TApplencourt/IRPy/master/examples/weight.svg)
 
 In this example `l[1,3]`, `volume`, `density`, `mass`, `g`, `weight` are the node of the production tree. 
 
