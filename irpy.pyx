@@ -80,11 +80,11 @@ class lazy_property(object):
         self.immutable = immutable
 
         if not self.leaf_node:
-            self.name = provider.__name__
+            name = provider.__name__
         else:
-            self.name = self.leaf_node
+            name = self.leaf_node
 
-        node = id(provider)
+        node = "%s_%s" % (name, id(provider))
         self._node = "_%s" % (node)
         self.incoherent = "_%s_incoherent" % (node)
 
@@ -115,7 +115,7 @@ class lazy_property(object):
                 d_path[obj].pop()
             else:
                 msg = "Node {0} have been removed from the tree by {1}"
-                raise AttributeError, msg.format(self.name," ".join(i))
+                raise AttributeError, msg.format(self.node," ".join(i))
 
         return value
 
@@ -131,7 +131,7 @@ class lazy_property(object):
             if self.leaf_node:
                 self.leaf_node = False
             else:
-                raise AttributeError, "Immutable Node {0}".format(self.name)
+                raise AttributeError, "Immutable Node {0}".format(self.node)
 
         try:
             cur_value = getattr(obj, _node)
