@@ -100,7 +100,7 @@ class TestBigTree(unittest.TestCase):
 
         try:
 
-            self.assertTrue(i < h*1.5)
+            self.assertTrue(i < h*1.75)
         except AssertionError as e:
             raise e
 
