@@ -32,21 +32,23 @@ def genealogy(obj, _node, direction, inclusif=False):
     return s
 
 
-def appendattr(obj, name, value):
+def addattr(obj, name, value):
     try:
         s = getattr(obj, name)
     except AttributeError:
         setattr(obj, name, set([value]))
     else:
-        setattr(obj, name, set([value]) | s)
+        setattr(obj, name, s | set([value]))
 
-def removeattr(obj,name,value):
+
+def removeattr(obj, name, value):
     try:
         s = getattr(obj, name)
-    except:
+    except AttributeError:
         pass
     else:
         setattr(obj, name, s - set([value]))
+
 
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
@@ -59,19 +61,19 @@ class lazy_property(object):
     My little Property...  friend
     """
 
-    def __init__(self, provider, leaf_node=None, immutable=True):
+    def __init__(self, provider, init_node=False, immutable=True):
         """Provider: If a function who will be used to compute the node
-           leaf_node: If the name of the node
+           init_node: If the name of the node
            immutable: If immutable is set you cannot set the node"""
 
         self.provider = provider
-        self.leaf_node = leaf_node
+        self.init_node = init_node
         self.immutable = immutable
 
-        if not self.leaf_node:
+        if not self.init_node:
             name = provider.__name__
         else:
-            name = self.leaf_node
+            name = self.init_node
 
         #Kind of human readable identifier
         self._node = "_%s_%s" % (name, id(provider))
@@ -83,11 +85,11 @@ class lazy_property(object):
         _node = self._node
 
         if _caller != d_last_caller[obj]:
-            appendattr(obj, "%s_parents" % _node, _caller)
-            appendattr(obj, "%s_children" % _caller, _node)
+            addattr(obj, "%s_parents" % _node, _caller)
+            addattr(obj, "%s_children" % _caller, _node)
             d_last_caller[obj] = _caller
 
-        #Get the value
+        #Wanted: value. Cached or Computed
         try:
             value = getattr(obj, _node)
         except AttributeError:
@@ -103,31 +105,37 @@ class lazy_property(object):
 
     def __set__(self, obj, value):
         """Set the value of the node
-        But wait, leaves are "gradual typed" variable! Youpi!
+        But wait, init_node are "gradual typed" variable! Youpi!
         Idea borrowed from the-worst-programming-language-ever (http://bit.ly/13tc6XW)
         """
 
         _node = self._node
 
-        if self.immutable:
-            if self.leaf_node:
-                self.leaf_node = False
-            else:
-                raise AttributeError, "Immutable Node {0}".format(self.node)
+        if not self.init_node:
 
-        #Set the new value
-        setattr(obj, _node, value)
+            if self.immutable:
+                raise AttributeError, "Immutable Node {0}".format(self._node)
 
-        #Node ancestor need to be recompute is asked
-        for _parent in genealogy(obj, _node, "parents"):
-            if hasattr(obj, _parent): delattr(obj, _parent)
+            #Set the new value
+            setattr(obj, _node, value)
 
-        #Node abandons his children
-        for _child in getattr(obj, "%s_children" % _node):
-            removeattr(obj, "%s_parents" % _child, _node)
+            #Node ancestor need to be recompute is asked
+            for _parent in genealogy(obj, _node, "parents"):
+                if hasattr(obj, _parent): delattr(obj, _parent)
 
-        #Indeed node is now a leaf
-        setattr(obj, "%s_children" % _node, set([]))
+            #Node abandons his children
+            for _child in getattr(obj, "%s_children" % _node):
+                removeattr(obj, "%s_parents" % _child, _node)
+
+            #Indeed node is now a leaf
+            setattr(obj, "%s_children" % _node, set())
+
+        else:
+            setattr(obj, "%s_parents" % _node, set())
+            setattr(obj, "%s_children" % _node, set())
+            setattr(obj, _node, value)
+
+            self.init_node = False
 
 
 def lazy_property_mutable(provider):
@@ -144,11 +152,12 @@ def lazy_property_leaves(mutables=(), immutables=()):
             for node in set(immutables) | set(mutables):
 
                 def provider(self):
-                    return getattr(self, "_%s" % (node))
+                    return getattr(self, "_%s" % node)
 
                 p = lazy_property(provider=provider,
-                                  leaf_node=node,
+                                  init_node=node,
                                   immutable=node in immutables)
+
                 #If this ugly? Yeah... Is this an issue? I don't really know
                 setattr(self.__class__, node, p)
 
