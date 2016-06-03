@@ -57,29 +57,7 @@ class TestBigTree(unittest.TestCase):
         self.f.b0 = set(["b0_set"])
         self.assertEqual(self.f.a0,  set(['a0', 'b0_set', 'b1']))
         self.f.c0 = set(["c0_set"])
-        self.assertEqual(self.f.a0,  set(['a0', 'b0', 'b1','c1', 'c0_set']))
-
-    def test_sibling(self):
-        self.assertEqual(self.f.a0,  set(['a0', 'b0', 'b1', 'c1', 'c0', 'd0', 'd1']))
-
-        #Change b0
-        self.f.b0 = set(["b0_set"])
-
-        #Now all the descendant are invalidate
-        try:
-            self.f.c0
-        except AttributeError:
-            pass
-
-        try:
-            self.f.c1
-        except AttributeError:
-            pass
-
-        #We set c0
-        self.f.c0 = set(["c0_set"])
-        #Now here sibling (c1) are now valid
-        self.assertEqual(self.f.c1, set(["c1"]))
+        self.assertEqual(self.f.a0,  set(['a0', 'b0_set', 'b1']))
 
     def test_time(self):
 

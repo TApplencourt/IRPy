@@ -40,25 +40,6 @@ def appendattr(obj, name, value):
     else:
         setattr(obj, name, set([value]) | s)
 
-
-def sibling_coherence(obj, _node):
-    """_node have changed, is now coherent. Reflect this fact on is sibling"""
-    visited = set()
-
-    for sibling in getattr(obj, "%s_incoherent" % (_node)):
-        if sibling not in visited:
-            for _child in genealogy(obj, sibling, "children", inclusif=True):
-                _incoherent_child = "%s_incoherent" % (_child)
-                if hasattr(obj, _incoherent_child):
-                    s = getattr(obj, _incoherent_child) - set([sibling])
-                    if not s:
-                        delattr(obj, _incoherent_child)
-                    else:
-                        setattr(obj, _incoherent_child, s)
-
-            visited.add(_child)
-
-
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
 # |_/ (/_ (_ (_) | (_|  |_ (_) |  
@@ -85,6 +66,7 @@ class lazy_property(object):
             name = self.leaf_node
 
         node = "%s_%s" % (name, id(provider))
+
         self._node = "_%s" % (node)
         self.incoherent = "_%s_incoherent" % (node)
 
@@ -95,6 +77,7 @@ class lazy_property(object):
 
         #Genealogy
         if _caller != d_last_caller[obj]:
+
             appendattr(obj, "%s_parents" % _node, _caller)
             appendattr(obj, "%s_children" % _caller, _node)
             d_last_caller[obj] = _caller
@@ -144,16 +127,14 @@ class lazy_property(object):
                 #Remove_ancestor_cache
                 for _parent in genealogy(obj, _node, "parents"):
                     if hasattr(obj, _parent): delattr(obj, _parent)
-
-                #Descendant are now incoherent;
-                #cause of the get optimization, we need to remove there cache.
+ 
+                #Node abandons his children
                 for _child in genealogy(obj, _node, "children"):
-                    appendattr(obj, "%s_incoherent" % (_child), _node)
-                    if hasattr(obj, _child): delattr(obj, _child)
+                    parents = getattr(obj, "%s_parents" % _child)
+                    setattr(obj, "%s_parents" % _child, parents - set([_node]))
 
-                #If this node was incoherent before, we need to do some genealogy stuff verify the status of is sibling.
-                if hasattr(obj, "%s_incoherent" % (_node)):
-                    sibling_coherence(obj, _node)
+                #Node is now a leaf
+                setattr(obj,"%s_children"%_node, set([]))
 
 
 def lazy_property_mutable(provider):
