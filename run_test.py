@@ -19,12 +19,13 @@ class BigTree(object):
         return set(["b0"]) | self.c0 | self.c1
 
     @property
-    def b0_hand(self):
+    def b0_vlp(self):
+        "Vanilla lazy_property"
         try:
-            v = self._b0_hand
+            v = self._b0_vlp
         except AttributeError:
             v = set(["b0"]) | self.c0 | self.c1
-            self._b0_hand = v
+            self._b0_vlp = v
 
         return v
 
@@ -56,6 +57,7 @@ class TestBigTree(unittest.TestCase):
         self.assertEqual(self.f.a0,  set(['a0', 'b0', 'b1', 'c1', 'c0', 'd0', 'd1']))
         self.f.b0 = set(["b0_set"])
         self.assertEqual(self.f.a0,  set(['a0', 'b0_set', 'b1']))
+        #c0 is a now a leaf with no link with a0
         self.f.c0 = set(["c0_set"])
         self.assertEqual(self.f.a0,  set(['a0', 'b0_set', 'b1']))
 
@@ -64,7 +66,7 @@ class TestBigTree(unittest.TestCase):
         import timeit
 
         i = timeit.timeit('f.b0;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
-        h = timeit.timeit('f.b0_hand;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
+        h = timeit.timeit('f.b0_vlp;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
 
         try:
             self.assertTrue(i < h*2.25)

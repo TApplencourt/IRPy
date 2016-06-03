@@ -1,10 +1,10 @@
 #!/usr/bin/python
-from collections import defaultdict
-import uuid
 
-#Handle your execution stack
+#Handle the execution stack
+from collections import defaultdict
 d_path = defaultdict(lambda: [None])
 d_last_caller = defaultdict(lambda: None)
+
 
 def genealogy(obj, _node, direction, inclusif=False):
     """Return the genealogy of a _node.
@@ -40,6 +40,14 @@ def appendattr(obj, name, value):
     else:
         setattr(obj, name, set([value]) | s)
 
+def removeattr(obj,name,value):
+    try:
+        s = getattr(obj, name)
+    except:
+        pass
+    else:
+        setattr(obj, name, s - set([value]))
+
 #  _                              
 # | \  _   _  _  ._ _. _|_  _  ._ 
 # |_/ (/_ (_ (_) | (_|  |_ (_) |  
@@ -65,19 +73,16 @@ class lazy_property(object):
         else:
             name = self.leaf_node
 
-        node = "%s_%s" % (name, id(provider))
-
-        self._node = "_%s" % (node)
-        self.incoherent = "_%s_incoherent" % (node)
+        #Kind of human readable identifier
+        self._node = "_%s_%s" % (name, id(provider))
 
     def __get__(self, obj, objtype):
         "Get the value of the node and handle the genealogy"
+
         _caller = d_path[obj][-1]
         _node = self._node
 
-        #Genealogy
         if _caller != d_last_caller[obj]:
-
             appendattr(obj, "%s_parents" % _node, _caller)
             appendattr(obj, "%s_children" % _caller, _node)
             d_last_caller[obj] = _caller
@@ -87,18 +92,12 @@ class lazy_property(object):
             value = getattr(obj, _node)
         except AttributeError:
 
-            try:
-                i = getattr(obj, self.incoherent)
-            except AttributeError:
-                d_path[obj].append(_node)
+            d_path[obj].append(_node)
 
-                value = self.provider(obj)
-                setattr(obj, _node, value)
+            value = self.provider(obj)
+            setattr(obj, _node, value)
 
-                d_path[obj].pop()
-            else:
-                msg = "Node {0} have been removed from the tree by {1}"
-                raise AttributeError, msg.format(self.node," ".join(i))
+            d_path[obj].pop()
 
         return value
 
@@ -116,25 +115,19 @@ class lazy_property(object):
             else:
                 raise AttributeError, "Immutable Node {0}".format(self.node)
 
-        try:
-            cur_value = getattr(obj, _node)
-        except AttributeError:
-            cur_value = None
-        finally:
-            if cur_value != value:
-                setattr(obj, _node, value)
+        #Set the new value
+        setattr(obj, _node, value)
 
-                #Remove_ancestor_cache
-                for _parent in genealogy(obj, _node, "parents"):
-                    if hasattr(obj, _parent): delattr(obj, _parent)
- 
-                #Node abandons his children
-                for _child in genealogy(obj, _node, "children"):
-                    parents = getattr(obj, "%s_parents" % _child)
-                    setattr(obj, "%s_parents" % _child, parents - set([_node]))
+        #Node ancestor need to be recompute is asked
+        for _parent in genealogy(obj, _node, "parents"):
+            if hasattr(obj, _parent): delattr(obj, _parent)
 
-                #Node is now a leaf
-                setattr(obj,"%s_children"%_node, set([]))
+        #Node abandons his children
+        for _child in getattr(obj, "%s_children" % _node):
+            removeattr(obj, "%s_parents" % _child, _node)
+
+        #Indeed node is now a leaf
+        setattr(obj, "%s_children" % _node, set([]))
 
 
 def lazy_property_mutable(provider):
