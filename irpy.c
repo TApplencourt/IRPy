@@ -3152,7 +3152,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  *         if not self.init_node:
  * 
  *             if self.immutable:             # <<<<<<<<<<<<<<
- *                 raise AttributeError, "Immutable Node {0}".format(self._node)
+ *                 raise AttributeError("Immutable Node {0}".format(self._node))
  * 
  */
     __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_immutable); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 116, __pyx_L1_error)
@@ -3164,7 +3164,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
       /* "irpy.pyx":117
  * 
  *             if self.immutable:
- *                 raise AttributeError, "Immutable Node {0}".format(self._node)             # <<<<<<<<<<<<<<
+ *                 raise AttributeError("Immutable Node {0}".format(self._node))             # <<<<<<<<<<<<<<
  * 
  *             #Set the new value
  */
@@ -3198,7 +3198,15 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       }
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __Pyx_Raise(__pyx_builtin_AttributeError, __pyx_t_1, 0, 0);
+      __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 117, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_1);
+      PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
+      __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_AttributeError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 117, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_Raise(__pyx_t_1, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __PYX_ERR(0, 117, __pyx_L1_error)
 
@@ -3206,7 +3214,7 @@ static PyObject *__pyx_pf_4irpy_13lazy_property_4__set__(CYTHON_UNUSED PyObject 
  *         if not self.init_node:
  * 
  *             if self.immutable:             # <<<<<<<<<<<<<<
- *                 raise AttributeError, "Immutable Node {0}".format(self._node)
+ *                 raise AttributeError("Immutable Node {0}".format(self._node))
  * 
  */
     }

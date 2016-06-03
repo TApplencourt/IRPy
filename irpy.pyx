@@ -114,7 +114,7 @@ class lazy_property(object):
         if not self.init_node:
 
             if self.immutable:
-                raise AttributeError, "Immutable Node {0}".format(self._node)
+                raise AttributeError("Immutable Node {0}".format(self._node))
 
             #Set the new value
             setattr(obj, _node, value)

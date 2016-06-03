@@ -53,7 +53,7 @@ class TestBigTree(unittest.TestCase):
         except AttributeError:
             return True
         else:
-            raise AttributeError, "This node is immutable!"
+            raise AttributeError("This node is immutable!")
 
     def test_dynamic(self):
         """
