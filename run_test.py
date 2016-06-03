@@ -91,7 +91,7 @@ class TestBigTree(unittest.TestCase):
                 (where property is written in C in the python stdlib)
             with our IRP lazy_property with the genealogy overhead
             
-            Python 2.*: 1.25x Python 3: 1.5x
+            Python 2.*: 1.25x Python 3: 1.75x
         """
         import timeit
 
