@@ -90,6 +90,8 @@ class TestBigTree(unittest.TestCase):
         """Compare the naive vanilla python lazy property
                 (where property is written in C in the python stdlib)
             with our IRP lazy_property with the genealogy overhead
+            
+            Python 2.*: 1.25x Python 3: 1.5x
         """
         import timeit
 
@@ -97,7 +99,8 @@ class TestBigTree(unittest.TestCase):
         h = timeit.timeit('f.b0_vlp;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
 
         try:
-            self.assertTrue(i < h*1.25)
+
+            self.assertTrue(i < h*1.5)
         except AssertionError as e:
             raise e
 
