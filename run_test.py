@@ -68,9 +68,9 @@ class TestBigTree(unittest.TestCase):
         #Create a new leaf
         self.f.b0 = set(["b0_set"])
         """
-        a0 --> b0_set  ||   c0 --> d0    
-           |           ||      |      
-           --> b1      ||      --> d1
+        a0 --> b0_set  ||  c0 --> d0
+           |           ||     |     
+           --> b1      ||     --> d1
         """
         self.assertEqual(self.f.a0,  set(['a0', 'b0_set', 'b1']))
         self.assertEqual(self.f.c0,  set(['c0', 'd0', 'd1']))
@@ -79,9 +79,9 @@ class TestBigTree(unittest.TestCase):
         self.f.b1 = set(['b1_set'])
         self.f.d0 = set(['d0_set'])
         """
-        a0 --> b0_set  ||   c0 --> d0_set
-           |           ||      |      
-           --> b1_set  ||      --> d1
+        a0 --> b0_set  ||  c0 --> d0_set
+           |           ||     |      
+           --> b1_set  ||     --> d1
         """
         self.assertEqual(self.f.a0,  set(['a0', 'b0_set', 'b1_set']))
         self.assertEqual(self.f.c0,  set(['c0', 'd0_set', 'd1']))
@@ -91,7 +91,7 @@ class TestBigTree(unittest.TestCase):
                 (where property is written in C in the python stdlib)
             with our IRP lazy_property with the genealogy overhead
             
-            Python 2.*: 1.25x Python 3: 1.75x
+            Python 2.*: 1.25x Python 3.*: 1.75x
         """
         import timeit
 
@@ -99,7 +99,6 @@ class TestBigTree(unittest.TestCase):
         h = timeit.timeit('f.b0_vlp;', setup='from __main__ import BigTree; f = BigTree()', number=5000000)
 
         try:
-
             self.assertTrue(i < h*1.75)
         except AssertionError as e:
             raise e
