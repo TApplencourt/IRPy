@@ -6,7 +6,7 @@ d_path = defaultdict(lambda: [None])
 d_last_caller = defaultdict(lambda: None)
 
 
-def genealogy(obj, _node, direction, inclusif=False):
+def genealogy(obj, _node, direction):
     """Return the genealogy of a _node.
        Direction is $parents or $children, recurse accordingly"""
 
@@ -25,9 +25,7 @@ def genealogy(obj, _node, direction, inclusif=False):
 
         return visited - set([None])
 
-    s = sap(_node, direction)
-    if not inclusif:
-        s = s - set([_node])
+    s = sap(_node, direction) - set([_node])
 
     return s
 
@@ -123,18 +121,17 @@ class lazy_property(object):
             for _parent in genealogy(obj, _node, "parents"):
                 if hasattr(obj, _parent): delattr(obj, _parent)
 
-            #Node abandons his children
-            for _child in getattr(obj, "%s_children" % _node):
-                removeattr(obj, "%s_parents" % _child, _node)
+            _children = "%s_children" % _node
+            if hasattr(obj, _children):
+                #Node abandons his children
+                for _child in getattr(obj, _children):
+                    removeattr(obj, "%s_parents" % _child, _node)
 
             #Indeed node is now a leaf
-            setattr(obj, "%s_children" % _node, set())
+            setattr(obj, _children, set())
 
         else:
-            setattr(obj, "%s_parents" % _node, set())
-            setattr(obj, "%s_children" % _node, set())
             setattr(obj, _node, value)
-
             self.init_node = False
 
 
