@@ -15,7 +15,7 @@ if USE_CYTHON:
 
 setup(
     name="irpy",
-    version="0.5.0",
+    version="0.6.0",
     ext_modules = extensions,
     description = 'IRP for Python',
     long_description='Look a github README please.',
