@@ -1,10 +1,7 @@
-#!/usr/bin/python
-
 #Handle the execution stack
 from collections import defaultdict
-d_path = defaultdict(lambda: [None])
+d_path = defaultdict(lambda: [])
 d_last_caller = defaultdict(lambda: None)
-
 
 def genealogy(obj, _node, direction,degree_max=100):
     """Return the genealogy of a _node.
@@ -37,7 +34,6 @@ def addattr(obj, name, value):
         setattr(obj, name, set([value]))
     else:
         setattr(obj, name, s | set([value]))
-
 
 def removeattr(obj, name, value):
     try:
@@ -79,14 +75,15 @@ class lazy_property(object):
     def __get__(self, obj, objtype):
         "Get the value of the node and handle the genealogy"
 
-        _caller = d_path[obj][-1]
         _node = self._node
 
-        if _caller != d_last_caller[obj]:
-            addattr(obj, "%s_parents" % _node, _caller)
-            addattr(obj, "%s_children" % _caller, _node)
-            d_last_caller[obj] = _caller
-
+        if d_path[obj]:
+            _caller = d_path[obj][-1]
+            if _caller != d_last_caller[obj]:
+                addattr(obj, "%s_parents" % _node, _caller)
+                addattr(obj, "%s_children" % _caller, _node)
+                d_last_caller[obj] = _caller
+    
         #Wanted: value. Cached or Computed
         try:
             value = getattr(obj, _node)
