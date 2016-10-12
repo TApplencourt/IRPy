@@ -1,6 +1,6 @@
 #Handle the execution stack
 from collections import defaultdict
-d_path = defaultdict(lambda: [])
+d_path = defaultdict(list)
 d_last_caller = defaultdict(lambda: None)
 
 def genealogy(obj, _node, direction,degree_max=100):
